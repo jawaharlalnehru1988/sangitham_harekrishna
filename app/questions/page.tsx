@@ -3,6 +3,9 @@ import Link from 'next/link';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import BottomNav from '@/components/layout/BottomNav';
+import axios from 'axios';
+
+export const revalidate = 0;
 
 interface Question {
     id: number;
@@ -14,11 +17,13 @@ interface Question {
 }
 
 async function getQuestions(): Promise<Question[]> {
-    const res = await fetch('https://api.askharekrishna.com/api/v1/carnatic-questions/', {
-        next: { revalidate: 3600 } // Revalidate every hour
-    });
-    if (!res.ok) throw new Error('Failed to fetch questions');
-    return res.json();
+    try {
+        const res = await axios.get('https://api.askharekrishna.com/api/v1/carnatic-questions/');
+        return res.data;
+    } catch (error) {
+        console.error('Error fetching questions:', error);
+        throw new Error('Failed to fetch questions');
+    }
 }
 
 export default async function QuestionsPage() {

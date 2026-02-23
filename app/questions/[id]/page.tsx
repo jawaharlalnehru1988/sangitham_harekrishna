@@ -4,6 +4,9 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import BottomNav from '@/components/layout/BottomNav';
 import { notFound } from 'next/navigation';
+import axios from 'axios';
+
+export const revalidate = 0;
 
 interface Question {
     id: number;
@@ -15,12 +18,14 @@ interface Question {
 }
 
 async function getQuestion(id: string): Promise<Question | null> {
-    const res = await fetch('https://api.askharekrishna.com/api/v1/carnatic-questions/', {
-        next: { revalidate: 3600 }
-    });
-    if (!res.ok) return null;
-    const questions: Question[] = await res.json();
-    return questions.find(q => q.id.toString() === id) || null;
+    try {
+        const res = await axios.get('https://api.askharekrishna.com/api/v1/carnatic-questions/');
+        const questions: Question[] = res.data;
+        return questions.find(q => q.id.toString() === id) || null;
+    } catch (error) {
+        console.error('Error fetching question:', error);
+        return null;
+    }
 }
 
 export default async function QuestionDetailPage({ params }: { params: Promise<{ id: string }> }) {
