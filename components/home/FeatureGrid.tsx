@@ -19,7 +19,7 @@ const FeatureGrid = () => {
             color: "from-blue-500/20 to-indigo-600/20",
             accent: "text-blue-400",
             borderColor: "border-blue-500/20",
-            href: "#"
+            href: "/foundational-lessons"
         },
         {
             title: "Ragam Lessons",
