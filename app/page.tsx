@@ -4,7 +4,6 @@ import FeatureGrid from "@/components/home/FeatureGrid";
 import LearningPath from "@/components/home/LearningPath";
 import QuoteSection from "@/components/home/QuoteSection";
 import Footer from "@/components/layout/Footer";
-import BottomNav from "@/components/layout/BottomNav";
 
 export default function Home() {
   return (
@@ -12,12 +11,12 @@ export default function Home() {
       <Header />
       <main className="pb-32">
         <HeroCarousel />
+        <QuoteSection />
         <FeatureGrid />
         <LearningPath />
-        <QuoteSection />
         <Footer />
       </main>
-      <BottomNav />
+
     </div>
   );
 }

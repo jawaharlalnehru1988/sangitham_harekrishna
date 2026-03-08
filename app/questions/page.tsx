@@ -2,7 +2,6 @@ import React from 'react';
 import Link from 'next/link';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import BottomNav from '@/components/layout/BottomNav';
 import axios from 'axios';
 
 export const revalidate = 0;
@@ -77,7 +76,6 @@ export default async function QuestionsPage() {
                 </div>
                 <Footer />
             </main>
-            <BottomNav />
         </div>
     );
 }

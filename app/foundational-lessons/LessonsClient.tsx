@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface Lesson {
     id: number;
@@ -20,7 +21,8 @@ interface LessonsClientProps {
 const ITEMS_PER_PAGE = 6;
 
 export default function LessonsClient({ initialLessons }: LessonsClientProps) {
-    const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+    const router = useRouter();
+    const [viewMode, setViewMode] = useState<'grid' | 'table'>('table');
     const [currentPage, setCurrentPage] = useState(1);
 
     const totalPages = Math.ceil(initialLessons.length / ITEMS_PER_PAGE);
@@ -75,10 +77,10 @@ export default function LessonsClient({ initialLessons }: LessonsClientProps) {
                 {viewMode === 'grid' ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         {currentLessons.map((lesson) => (
-                            <Link
+                            <div
                                 key={lesson.id}
-                                href={`/foundational-lessons/${lesson.id}`}
-                                className="group relative overflow-hidden rounded-2xl border border-blue-500/20 bg-gradient-to-br from-blue-500/10 to-indigo-600/10 p-5 transition-all hover:scale-[1.02] active:scale-95"
+                                onClick={() => router.push(`/foundational-lessons/${lesson.id}`)}
+                                className="group relative overflow-hidden rounded-2xl border border-blue-500/20 bg-gradient-to-br from-blue-500/10 to-indigo-600/10 p-5 transition-all hover:scale-[1.02] active:scale-95 cursor-pointer"
                             >
                                 <div className="absolute -right-4 -top-4 size-24 rounded-full bg-blue-400 opacity-5 blur-2xl" />
 
@@ -109,7 +111,7 @@ export default function LessonsClient({ initialLessons }: LessonsClientProps) {
                                         </span>
                                     </div>
                                 </div>
-                            </Link>
+                            </div>
                         ))}
                     </div>
                 ) : (
@@ -126,7 +128,11 @@ export default function LessonsClient({ initialLessons }: LessonsClientProps) {
                                 </thead>
                                 <tbody>
                                     {currentLessons.map((lesson, idx) => (
-                                        <tr key={lesson.id} className="border-b border-white/5 hover:bg-white/5 transition-colors group">
+                                        <tr
+                                            key={lesson.id}
+                                            onClick={() => router.push(`/foundational-lessons/${lesson.id}`)}
+                                            className="border-b border-white/5 hover:bg-white/5 transition-colors group cursor-pointer"
+                                        >
                                             <td className="px-6 py-4 text-sm font-medium text-slate-500">
                                                 {(currentPage - 1) * ITEMS_PER_PAGE + idx + 1}
                                             </td>
@@ -141,13 +147,10 @@ export default function LessonsClient({ initialLessons }: LessonsClientProps) {
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 text-right">
-                                                <Link
-                                                    href={`/foundational-lessons/${lesson.id}`}
-                                                    className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-primary hover:text-white transition-colors"
-                                                >
+                                                <div className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-primary group-hover:text-white transition-colors">
                                                     View
                                                     <span className="material-symbols-outlined text-sm">chevron_right</span>
-                                                </Link>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}
