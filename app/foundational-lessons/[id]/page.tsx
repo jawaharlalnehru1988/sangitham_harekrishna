@@ -2,7 +2,6 @@ import React from 'react';
 import Link from 'next/link';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import BottomNav from '@/components/layout/BottomNav';
 import { notFound } from 'next/navigation';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
@@ -95,7 +94,6 @@ export default async function LessonDetailPage({ params }: { params: Promise<{ i
                 </div>
             </main>
             <Footer />
-            <BottomNav />
         </div>
     );
 }

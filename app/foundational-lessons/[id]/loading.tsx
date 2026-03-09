@@ -1,7 +1,6 @@
 import React from 'react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import BottomNav from '@/components/layout/BottomNav';
 
 export default function Loading() {
     return (
@@ -26,7 +25,6 @@ export default function Loading() {
                 </div>
             </main>
             <Footer />
-            <BottomNav />
         </div>
     );
 }
