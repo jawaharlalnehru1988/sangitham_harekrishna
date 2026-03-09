@@ -28,7 +28,7 @@ const FeatureGrid = () => {
             color: "from-emerald-500/20 to-teal-600/20",
             accent: "text-emerald-400",
             borderColor: "border-emerald-500/20",
-            href: "#"
+            href: "/ragam-lessons"
         },
         {
             title: "Kirtan Lessons",

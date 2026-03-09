@@ -17,18 +17,19 @@ interface Lesson {
     updated_at: string;
 }
 
-async function getLessons(): Promise<Lesson[]> {
+async function getRagamLessons(): Promise<Lesson[]> {
     try {
         const res = await axios.get('https://api.askharekrishna.com/api/v1/carnatic-syllabus/');
-        return res.data;
+        // Filter for Ragalakshana division
+        return res.data.filter((lesson: Lesson) => lesson.division === 'Ragalakshana');
     } catch (error) {
-        console.error('Error fetching lessons:', error);
+        console.error('Error fetching ragam lessons:', error);
         return [];
     }
 }
 
-export default async function FoundationalLessonsPage() {
-    const lessons = await getLessons();
+export default async function RagamLessonsPage() {
+    const lessons = await getRagamLessons();
 
     return (
         <div className="min-h-screen">
@@ -40,13 +41,16 @@ export default async function FoundationalLessonsPage() {
                             <span className="material-symbols-outlined text-base">arrow_back</span>
                             Back to Home
                         </Link>
-                        <h1 className="text-3xl font-extrabold tracking-tight text-primary">Foundational Lessons</h1>
-                        <p className="text-slate-400 text-sm mt-2">Master the core concepts and fundamental basics of Carnatic music.</p>
+                        <h1 className="text-3xl font-extrabold tracking-tight text-emerald-400">Ragam Lessons</h1>
+                        <p className="text-slate-400 text-sm mt-2">Deep dive into melodic structures and raga characteristics.</p>
                     </div>
 
                     <LessonsClient
                         initialLessons={lessons}
-                        basePath="/foundational-lessons"
+                        basePath="/ragam-lessons"
+                        icon="music_note"
+                        accentColor="text-emerald-400"
+                        bgColor="from-emerald-500/10 to-teal-600/10"
                     />
                 </div>
             </main>

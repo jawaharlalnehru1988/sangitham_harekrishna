@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 interface Lesson {
@@ -16,11 +15,21 @@ interface Lesson {
 
 interface LessonsClientProps {
     initialLessons: Lesson[];
+    basePath: string;
+    icon?: string;
+    accentColor?: string;
+    bgColor?: string;
 }
 
 const ITEMS_PER_PAGE = 6;
 
-export default function LessonsClient({ initialLessons }: LessonsClientProps) {
+export default function LessonsClient({
+    initialLessons,
+    basePath,
+    icon = "auto_stories",
+    accentColor = "text-blue-400",
+    bgColor = "from-blue-500/10 to-indigo-600/10"
+}: LessonsClientProps) {
     const router = useRouter();
     const [viewMode, setViewMode] = useState<'grid' | 'table'>('table');
     const [currentPage, setCurrentPage] = useState(1);
@@ -79,21 +88,21 @@ export default function LessonsClient({ initialLessons }: LessonsClientProps) {
                         {currentLessons.map((lesson) => (
                             <div
                                 key={lesson.id}
-                                onClick={() => router.push(`/foundational-lessons/${lesson.id}`)}
-                                className="group relative overflow-hidden rounded-2xl border border-blue-500/20 bg-gradient-to-br from-blue-500/10 to-indigo-600/10 p-5 transition-all hover:scale-[1.02] active:scale-95 cursor-pointer"
+                                onClick={() => router.push(`${basePath}/${lesson.id}`)}
+                                className={`group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br ${bgColor} p-5 transition-all hover:scale-[1.02] active:scale-95 cursor-pointer`}
                             >
-                                <div className="absolute -right-4 -top-4 size-24 rounded-full bg-blue-400 opacity-5 blur-2xl" />
+                                <div className={`absolute -right-4 -top-4 size-24 rounded-full bg-current opacity-5 blur-2xl ${accentColor}`} />
 
                                 <div className="relative z-10 flex h-full flex-col justify-between gap-4">
-                                    <div className="flex size-12 items-center justify-center rounded-xl bg-background-dark/40 border border-white/5 shadow-inner text-blue-400">
+                                    <div className={`flex size-12 items-center justify-center rounded-xl bg-background-dark/40 border border-white/5 shadow-inner ${accentColor}`}>
                                         <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>
-                                            auto_stories
+                                            {icon}
                                         </span>
                                     </div>
 
                                     <div>
                                         <div className="flex items-center gap-2 mb-1">
-                                            <span className="text-[10px] font-bold uppercase tracking-widest text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-full">
+                                            <span className={`text-[10px] font-bold uppercase tracking-widest ${accentColor} bg-white/5 px-2 py-0.5 rounded-full`}>
                                                 {lesson.division}
                                             </span>
                                         </div>
@@ -103,7 +112,7 @@ export default function LessonsClient({ initialLessons }: LessonsClientProps) {
                                     </div>
 
                                     <div className="flex items-center justify-between mt-2">
-                                        <span className="text-[10px] font-bold uppercase tracking-widest text-blue-400">
+                                        <span className={`text-[10px] font-bold uppercase tracking-widest ${accentColor}`}>
                                             Start Lesson
                                         </span>
                                         <span className="material-symbols-outlined text-sm opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
@@ -130,7 +139,7 @@ export default function LessonsClient({ initialLessons }: LessonsClientProps) {
                                     {currentLessons.map((lesson, idx) => (
                                         <tr
                                             key={lesson.id}
-                                            onClick={() => router.push(`/foundational-lessons/${lesson.id}`)}
+                                            onClick={() => router.push(`${basePath}/${lesson.id}`)}
                                             className="border-b border-white/5 hover:bg-white/5 transition-colors group cursor-pointer"
                                         >
                                             <td className="px-6 py-4 text-sm font-medium text-slate-500">
@@ -142,7 +151,7 @@ export default function LessonsClient({ initialLessons }: LessonsClientProps) {
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 text-center">
-                                                <span className="text-[10px] font-bold uppercase tracking-widest text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full">
+                                                <span className={`text-[10px] font-bold uppercase tracking-widest ${accentColor} bg-white/5 px-3 py-1 rounded-full`}>
                                                     {lesson.division}
                                                 </span>
                                             </td>
