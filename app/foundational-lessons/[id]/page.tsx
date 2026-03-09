@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import LessonNavigation from '@/components/lessons/LessonNavigation';
 
 export const revalidate = 0;
 
@@ -27,15 +28,31 @@ async function getLesson(id: string): Promise<Lesson | null> {
         console.error('Error fetching lesson:', error);
         return null;
     }
+} async function getLessons(division?: string): Promise<Lesson[]> {
+    try {
+        const res = await axios.get('https://api.askharekrishna.com/api/v1/carnatic-syllabus/');
+        if (division) {
+            return res.data.filter((l: Lesson) => l.division === division);
+        }
+        return res.data;
+    } catch (error) {
+        console.error('Error fetching lessons:', error);
+        return [];
+    }
 }
 
 export default async function LessonDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     const lesson = await getLesson(id);
+    const allLessons = await getLessons('beginner pedagogy of Carnatic music');
 
     if (!lesson) {
         notFound();
     }
+
+    const currentIdx = allLessons.findIndex(l => l.id === lesson.id);
+    const prevLesson = currentIdx > 0 ? allLessons[currentIdx - 1] : null;
+    const nextLesson = currentIdx < allLessons.length - 1 ? allLessons[currentIdx + 1] : null;
 
     return (
         <div className="min-h-screen">
@@ -84,6 +101,12 @@ export default async function LessonDetailPage({ params }: { params: Promise<{ i
                             {lesson.lesson}
                         </ReactMarkdown>
                     </article>
+
+                    <LessonNavigation
+                        prevLesson={prevLesson}
+                        nextLesson={nextLesson}
+                        basePath="/foundational-lessons"
+                    />
 
                     <div className="mt-12 pt-8 border-t border-white/10 flex flex-col items-center gap-4 text-center">
                         <span className="material-symbols-outlined text-blue-500/30 text-4xl">auto_stories</span>
