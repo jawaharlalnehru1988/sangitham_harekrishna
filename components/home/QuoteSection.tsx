@@ -9,14 +9,11 @@ const QuoteSection = () => {
 
             <div className="space-y-8">
                 {/* Telugu Original */}
-                <h2 className="text-2xl md:text-4xl font-semibold text-primary tracking-wide leading-loose">
-                    సంగీత జ్ఞానము భక్తి వినా సన్మార్గము కలదే మనసా
-                </h2>
-
                 {/* Transliteration */}
-                <p className="text-sm md:text-lg text-primary/60 italic font-medium tracking-wide">
+                <p className="text-2xl md:text-2xl text-primary/60 italic font-medium tracking-wide">
                     Sangīta jñānamu bhakti vinā sanmārgamu galadē manasā
                 </p>
+
 
                 {/* English Meaning */}
                 <div className="relative py-8 md:py-12 max-w-3xl mx-auto border-y border-primary/10">
