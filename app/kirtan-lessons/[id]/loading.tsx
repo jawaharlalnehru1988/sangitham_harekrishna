@@ -8,11 +8,11 @@ export default function Loading() {
             <Header />
             <main className="pb-32 px-4 pt-8">
                 <div className="max-w-3xl mx-auto">
-                    <div className="h-4 w-32 bg-amber-500/10 rounded mb-6 animate-pulse" />
+                    <div className="h-4 w-32 bg-rose-500/10 rounded mb-6 animate-pulse" />
 
-                    <div className="mb-8 h-48 rounded-3xl bg-amber-500/5 border border-amber-500/10 animate-pulse flex flex-col justify-end p-6">
-                        <div className="h-4 w-20 bg-amber-500/20 rounded mb-4" />
-                        <div className="h-10 w-full bg-amber-500/20 rounded" />
+                    <div className="mb-8 h-48 rounded-3xl bg-rose-500/5 border border-rose-500/10 animate-pulse flex flex-col justify-end p-6">
+                        <div className="h-4 w-20 bg-rose-500/20 rounded mb-4" />
+                        <div className="h-10 w-full bg-rose-500/20 rounded" />
                     </div>
 
                     <div className="space-y-4">
