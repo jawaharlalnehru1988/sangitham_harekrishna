@@ -8,17 +8,16 @@ import Footer from "@/components/layout/Footer";
 
 export default function Home() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="pb-32">
+      <div role="main" className="flex-grow pb-32">
         <HeroCarousel />
         <QuoteSection />
         <FeatureGrid />
         <LearningPath />
         <OtherWebsites />
-        <Footer />
-      </main>
-
+      </div>
+      <Footer />
     </div>
   );
 }

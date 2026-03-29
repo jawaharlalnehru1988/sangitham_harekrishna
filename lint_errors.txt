@@ -1,0 +1,91 @@
+
+> sangitham_harekrishna@0.1.0 lint
+> eslint
+
+
+D:\projects\sangitham_harekrishna\app\layout.tsx
+  23:9  warning  Custom fonts not added in `pages/_document.js` will only load for a single page. This is discouraged. See: https://nextjs.org/docs/messages/no-page-custom-font  @next/next/no-page-custom-font
+
+D:\projects\sangitham_harekrishna\app\questions\page.tsx
+  44:103  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+D:\projects\sangitham_harekrishna\components\home\OtherWebsites.tsx
+  71:13  error  Error: Avoid constructing JSX within try/catch
+
+React does not immediately render components when JSX is rendered, so any errors from this component will not be caught by the try/catch. To catch errors in rendering a given component, wrap that component in an error boundary. (https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary).
+
+D:\projects\sangitham_harekrishna\components\home\OtherWebsites.tsx:71:13
+   69 |
+   70 |         return (
+>  71 |             <section className="px-4 py-8">
+      |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  72 |                 <div className="flex items-center justify-between mb-6">
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  73 |                     <h3 className="text-xl font-extrabold tracking-tight">Our Spiritual Network</h3>
+      ΓÇª
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 118 |                 </div>
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 119 |             </section>
+      | ^^^^^^^^^^^^^^^^^^^^^^^ Avoid constructing JSX within try/catch
+  120 |         );
+  121 |     } catch (error) {
+  122 |         console.error('Error fetching ourOtherSites:', error);  react-hooks/error-boundaries
+  72:17  error  Error: Avoid constructing JSX within try/catch
+
+React does not immediately render components when JSX is rendered, so any errors from this component will not be caught by the try/catch. To catch errors in rendering a given component, wrap that component in an error boundary. (https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary).
+
+D:\projects\sangitham_harekrishna\components\home\OtherWebsites.tsx:72:17
+  70 |         return (
+  71 |             <section className="px-4 py-8">
+> 72 |                 <div className="flex items-center justify-between mb-6">
+     |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 73 |                     <h3 className="text-xl font-extrabold tracking-tight">Our Spiritual Network</h3>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 74 |                 </div>
+     | ^^^^^^^^^^^^^^^^^^^^^^^ Avoid constructing JSX within try/catch
+  75 |
+  76 |                 <div className="flex flex-col gap-4">
+  77 |                     {sites.map((site) => (                                                                                                                                                                    react-hooks/error-boundaries
+  73:21  error  Error: Avoid constructing JSX within try/catch
+
+React does not immediately render components when JSX is rendered, so any errors from this component will not be caught by the try/catch. To catch errors in rendering a given component, wrap that component in an error boundary. (https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary).
+
+D:\projects\sangitham_harekrishna\components\home\OtherWebsites.tsx:73:21
+  71 |             <section className="px-4 py-8">
+  72 |                 <div className="flex items-center justify-between mb-6">
+> 73 |                     <h3 className="text-xl font-extrabold tracking-tight">Our Spiritual Network</h3>
+     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Avoid constructing JSX within try/catch
+  74 |                 </div>
+  75 |
+  76 |                 <div className="flex flex-col gap-4">                                                                                                                                                                                                                                                                                                                                                             react-hooks/error-boundaries
+  76:17  error  Error: Avoid constructing JSX within try/catch
+
+React does not immediately render components when JSX is rendered, so any errors from this component will not be caught by the try/catch. To catch errors in rendering a given component, wrap that component in an error boundary. (https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary).
+
+D:\projects\sangitham_harekrishna\components\home\OtherWebsites.tsx:76:17
+   74 |                 </div>
+   75 |
+>  76 |                 <div className="flex flex-col gap-4">
+      |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  77 |                     {sites.map((site) => (
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  78 |                         <a
+      ΓÇª
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 117 |                     ))}
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 118 |                 </div>
+      | ^^^^^^^^^^^^^^^^^^^^^^^ Avoid constructing JSX within try/catch
+  119 |             </section>
+  120 |         );
+  121 |     } catch (error) {                                                                                                                                                                                                                 react-hooks/error-boundaries
+
+D:\projects\sangitham_harekrishna\tmp\reassign_theory.js
+  1:15  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+D:\projects\sangitham_harekrishna\tmp\rename_divisions.js
+  1:15  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+Γ£û 8 problems (7 errors, 1 warning)
+

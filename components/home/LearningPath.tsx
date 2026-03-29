@@ -11,7 +11,7 @@ const LearningPath = () => {
                 />
                 <div className="flex-1">
                     <h4 className="font-bold text-base leading-snug">Introduction to Mayamalavagowla</h4>
-                    <p className="text-xs text-slate-400 mt-1">Lesson 4 of 12 • 15 mins</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-300 mt-1">Lesson 4 of 12 • 15 mins</p>
                     <div className="w-full h-1.5 bg-primary/20 rounded-full mt-3 overflow-hidden">
                         <div className="w-[45%] h-full bg-primary" />
                     </div>

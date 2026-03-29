@@ -10,7 +10,7 @@ const QuoteSection = () => {
             <div className="space-y-8">
                 {/* Telugu Original */}
                 {/* Transliteration */}
-                <p className="text-2xl md:text-2xl text-primary/60 italic font-medium tracking-wide">
+                <p className="text-2xl md:text-2xl text-primary/70 dark:text-primary/90 italic font-medium tracking-wide">
                     Sangīta jñānamu bhakti vinā sanmārgamu galadē manasā
                 </p>
 
@@ -24,7 +24,7 @@ const QuoteSection = () => {
 
                 {/* Philosophical Analogy */}
                 <div className="max-w-2xl mx-auto px-6 py-4 rounded-2xl bg-primary/5 border border-primary/10">
-                    <p className="text-sm md:text-base text-foreground/70 leading-relaxed font-inter">
+                    <p className="text-sm md:text-base text-foreground/80 leading-relaxed font-inter">
                         Saint Tyagaraja teaches that musical mastery without <span className="text-primary font-bold">Bhakti</span> is merely a material accomplishment — as hollow as decorating a corpse (<span className="italic font-semibold text-primary underline decoration-primary/20 underline-offset-4">shava shobhanaa mataah</span>).
                     </p>
                 </div>
@@ -34,7 +34,7 @@ const QuoteSection = () => {
                 <div className="w-20 h-0.5 bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
                 <div className="flex flex-col items-center">
                     <span className="text-xs font-bold tracking-[0.4em] text-primary uppercase">Saint Tyagaraja</span>
-                    <span className="text-[10px] text-primary/50 font-bold uppercase tracking-[0.2em] mt-1">Sangīta jñānamu • Dhanyasi Raga</span>
+                    <span className="text-[10px] text-primary/60 dark:text-primary/80 font-bold uppercase tracking-[0.2em] mt-1">Sangīta jñānamu • Dhanyasi Raga</span>
                 </div>
             </div>
         </section>

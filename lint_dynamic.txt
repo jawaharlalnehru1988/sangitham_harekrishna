@@ -1,0 +1,16 @@
+
+> sangitham_harekrishna@0.1.0 lint
+> eslint
+
+
+D:\projects\sangitham_harekrishna\app\layout.tsx
+  23:9  warning  Custom fonts not added in `pages/_document.js` will only load for a single page. This is discouraged. See: https://nextjs.org/docs/messages/no-page-custom-font  @next/next/no-page-custom-font
+
+D:\projects\sangitham_harekrishna\tmp\reassign_theory.js
+  1:15  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+D:\projects\sangitham_harekrishna\tmp\rename_divisions.js
+  1:15  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+Γ£û 3 problems (2 errors, 1 warning)
+

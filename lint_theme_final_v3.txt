@@ -1,0 +1,14 @@
+
+> sangitham_harekrishna@0.1.0 lint
+> eslint
+
+
+D:\projects\sangitham_harekrishna\app\layout.tsx
+  25:9  warning  Custom fonts not added in `pages/_document.js` will only load for a single page. This is discouraged. See: https://nextjs.org/docs/messages/no-page-custom-font  @next/next/no-page-custom-font
+
+D:\projects\sangitham_harekrishna\components\providers\ThemeProvider.tsx
+  25:13  warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/set-state-in-effect')
+
+Γ£û 2 problems (0 errors, 2 warnings)
+  0 errors and 1 warning potentially fixable with the `--fix` option.
+

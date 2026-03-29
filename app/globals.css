@@ -1,10 +1,11 @@
 @import "tailwindcss";
+@variant dark (&:where(.dark, .dark *));
 @plugin "@tailwindcss/typography";
 
 @theme {
   --color-primary: #f3a735;
   --color-background-light: #f8f7f5;
-  --color-background-dark: #1a160f;
+  --color-background-dark: #24211b;
   --color-saffron-deep: #d97706;
   --color-spiritual-red: #7f1d1d;
 
@@ -18,11 +19,19 @@
 :root {
   --background: #f8f7f5;
   --foreground: #0f172a;
+  --glass-bg: rgba(248, 247, 245, 0.8);
+  --overlay-solid: rgba(248, 247, 245, 1);
+  --overlay-transparent: rgba(248, 247, 245, 0);
+  --overlay-dim: rgba(248, 247, 245, 0.4);
 }
 
 .dark {
-  --background: #1a160f;
-  --foreground: #f8fafc;
+  --background: #24211b; /* Lighter spiritual dark */
+  --foreground: #ffffff;
+  --glass-bg: rgba(50, 45, 35, 0.8);
+  --overlay-solid: rgba(36, 33, 27, 0.95);
+  --overlay-transparent: rgba(36, 33, 27, 0);
+  --overlay-dim: rgba(60, 55, 45, 0.4);
 }
 
 body {
@@ -37,13 +46,50 @@ body {
 }
 
 .glass-effect {
-  background: rgba(26, 22, 15, 0.8);
+  background: var(--glass-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
 
 .gradient-overlay {
-  background: linear-gradient(0deg, rgba(26, 22, 15, 1) 0%, rgba(26, 22, 15, 0) 50%, rgba(26, 22, 15, 0.4) 100%);
+  background: linear-gradient(0deg, var(--overlay-solid) 0%, var(--overlay-transparent) 50%, var(--overlay-dim) 100%);
+}
+
+.dark .prose {
+  --tw-prose-body: #f1f5f9 !important;
+  --tw-prose-headings: #ffffff !important;
+  --tw-prose-lead: #cbd5e1 !important;
+  --tw-prose-links: var(--color-primary) !important;
+  --tw-prose-bold: #ffffff !important;
+  --tw-prose-counters: #cbd5e1 !important;
+  --tw-prose-bullets: #f3a735 !important;
+  --tw-prose-hr: rgba(255, 255, 255, 0.1) !important;
+  --tw-prose-quotes: #f1f5f9 !important;
+  --tw-prose-quote-borders: #f3a735 !important;
+  --tw-prose-captions: #94a3b8 !important;
+  --tw-prose-code: #f3a735 !important;
+  --tw-prose-pre-code: #f1f5f9 !important;
+  --tw-prose-pre-bg: #1a160f !important;
+  --tw-prose-th-borders: rgba(255, 255, 255, 0.2) !important;
+  --tw-prose-td-borders: rgba(255, 255, 255, 0.1) !important;
+  
+  color: #f1f5f9 !important;
+}
+
+.dark .prose strong {
+  color: #ffffff !important;
+}
+
+.dark .prose h1, .dark .prose h2, .dark .prose h3, .dark .prose h4 {
+  color: #ffffff !important;
+}
+
+.dark .prose p, .dark .prose li {
+  color: #f1f5f9 !important;
+}
+
+.dark .lesson-nav-topic {
+  color: #ffffff !important;
 }
 
 .no-scrollbar::-webkit-scrollbar {
