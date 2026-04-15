@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import axios from 'axios';
+import { API_BASE_URL } from '@/lib/constants';
 
 interface CategoryData {
     title: string;
@@ -64,15 +65,21 @@ async function getCategories(): Promise<CategoryData[]> {
     let apiCategories: string[] = [];
     
     try {
-        const res = await axios.get('https://api.askharekrishna.com/api/v1/carnatic-syllabus/categories/');
-        apiCategories = res.data;
+        const res = await axios.get(`${API_BASE_URL}/categories/`);
+        // The API returns { categories: string[] }
+        if (res.data && res.data.categories) {
+            apiCategories = res.data.categories;
+        } else if (Array.isArray(res.data)) {
+            apiCategories = res.data;
+        }
     } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         console.warn('Categories endpoint failed, trying to extract from full syllabus...', errorMessage);
         
         try {
-            const res = await axios.get('https://api.askharekrishna.com/api/v1/carnatic-syllabus/');
-            const lessons: { division: string }[] = res.data;
+            const res = await axios.get(`${API_BASE_URL}/`);
+            // The syllabus API is paginated: { results: Lesson[] }
+            const lessons: { division: string }[] = res.data.results || (Array.isArray(res.data) ? res.data : []);
             apiCategories = Array.from(new Set(lessons.map(l => l.division).filter(Boolean)));
         } catch (fallbackError) {
             console.error('All category fetching strategies failed:', fallbackError);

@@ -10,6 +10,8 @@ import LessonNavigation from '@/components/lessons/LessonNavigation';
 
 export const revalidate = 0;
 
+import { API_BASE_URL } from '@/lib/constants';
+
 interface Lesson {
     id: number;
     division: string;
@@ -22,7 +24,7 @@ interface Lesson {
 
 async function getLesson(id: string): Promise<Lesson | null> {
     try {
-        const res = await axios.get(`https://api.askharekrishna.com/api/v1/carnatic-syllabus/${id}/`);
+        const res = await axios.get(`${API_BASE_URL}/${id}/`);
         return res.data;
     } catch (error) {
         console.error('Error fetching lesson:', error);
@@ -32,8 +34,9 @@ async function getLesson(id: string): Promise<Lesson | null> {
 
 async function getLessons(division: string): Promise<Lesson[]> {
     try {
-        const res = await axios.get('https://api.askharekrishna.com/api/v1/carnatic-syllabus/');
-        return res.data.filter((l: Lesson) => l.division === division);
+        const res = await axios.get(`${API_BASE_URL}/?division=${encodeURIComponent(division)}&page_size=100`);
+        const lessons: Lesson[] = res.data.results || (Array.isArray(res.data) ? res.data : []);
+        return lessons;
     } catch (error) {
         console.error('Error fetching lessons:', error);
         return [];

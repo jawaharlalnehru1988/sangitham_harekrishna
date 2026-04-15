@@ -7,6 +7,8 @@ import LessonsClient from '@/components/lessons/LessonsClient';
 
 export const revalidate = 0;
 
+import { API_BASE_URL } from '@/lib/constants';
+
 interface Lesson {
     id: number;
     division: string;
@@ -66,22 +68,21 @@ const getStyleForCategory = (title: string) => {
 
 async function getLessons(slug: string): Promise<{ lessons: Lesson[], categoryName: string }> {
     try {
-        const res = await axios.get('https://api.askharekrishna.com/api/v1/carnatic-syllabus/');
-        const allLessons: Lesson[] = res.data;
+        // 1. Get categories to match slug back to division name
+        const catRes = await axios.get(`${API_BASE_URL}/categories/`);
+        const categories: string[] = catRes.data.categories || (Array.isArray(catRes.data) ? catRes.data : []);
         
-        // Get all unique divisions
-        const divisions = Array.from(new Set(allLessons.map(l => l.division).filter(Boolean)));
-        
-        // Find the division that matches the slug
-        const categoryName = divisions.find(div => {
-            const divSlug = div.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        const categoryName = categories.find(cat => {
+            const divSlug = cat.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
             return divSlug === slug;
         }) || slug;
 
-        const filteredLessons = allLessons.filter((l: Lesson) => l.division === categoryName);
+        // 2. Fetch only lessons for this division
+        const res = await axios.get(`${API_BASE_URL}/?division=${encodeURIComponent(categoryName)}&page_size=100`);
+        const lessons: Lesson[] = res.data.results || (Array.isArray(res.data) ? res.data : []);
         
         return { 
-            lessons: filteredLessons, 
+            lessons, 
             categoryName 
         };
     } catch (error) {
