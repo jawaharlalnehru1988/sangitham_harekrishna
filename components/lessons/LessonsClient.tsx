@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 interface Lesson {
     id: number;
     division: string;
+    category_name?: string;
     topic: string;
     lesson: string;
     audioPath: string | null;
@@ -19,16 +20,27 @@ interface LessonsClientProps {
     icon?: string;
     accentColor?: string;
     bgColor?: string;
+    customColor?: string;
 }
 
 const ITEMS_PER_PAGE = 6;
+
+// Helper to convert hex to rgba
+const hexToRgba = (hex: string, opacity: number) => {
+    if (!hex || !hex.startsWith('#')) return `rgba(99, 102, 241, ${opacity})`;
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+};
 
 export default function LessonsClient({
     initialLessons,
     basePath,
     icon = "auto_stories",
     accentColor = "text-blue-400",
-    bgColor = "from-blue-500/10 to-indigo-600/10"
+    bgColor = "from-blue-500/10 to-indigo-600/10",
+    customColor
 }: LessonsClientProps) {
     const router = useRouter();
     const [viewMode, setViewMode] = useState<'grid' | 'table'>('table');
@@ -89,12 +101,22 @@ export default function LessonsClient({
                             <div
                                 key={lesson.id}
                                 onClick={() => router.push(`${basePath}/${lesson.id}`)}
-                                className={`group relative overflow-hidden rounded-2xl border border-black/5 dark:border-white/10 bg-gradient-to-br ${bgColor} p-5 transition-all hover:scale-[1.02] active:scale-95 cursor-pointer shadow-sm hover:shadow-md dark:shadow-none`}
+                                className="group relative overflow-hidden rounded-2xl border transition-all hover:scale-[1.02] active:scale-95 cursor-pointer shadow-sm hover:shadow-md dark:shadow-none p-5"
+                                style={{ 
+                                    backgroundColor: customColor ? hexToRgba(customColor, 0.1) : undefined,
+                                    borderColor: customColor ? hexToRgba(customColor, 0.2) : undefined,
+                                }}
                             >
-                                <div className={`absolute -right-4 -top-4 size-24 rounded-full bg-current opacity-5 blur-2xl ${accentColor}`} />
+                                <div 
+                                    className={`absolute -right-4 -top-4 size-24 rounded-full opacity-5 blur-2xl ${!customColor ? accentColor : ''}`} 
+                                    style={customColor ? { backgroundColor: customColor } : {}}
+                                />
 
                                 <div className="relative z-10 flex h-full flex-col justify-between gap-4">
-                                    <div className={`flex size-12 items-center justify-center rounded-xl bg-black/5 dark:bg-background-dark/40 border border-black/5 dark:border-white/5 shadow-inner ${accentColor}`}>
+                                    <div 
+                                        className={`flex size-12 items-center justify-center rounded-xl bg-black/5 dark:bg-background-dark/40 border border-black/5 dark:border-white/5 shadow-inner ${!customColor ? accentColor : ''}`}
+                                        style={customColor ? { color: customColor } : {}}
+                                    >
                                         <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>
                                             {icon}
                                         </span>
@@ -102,8 +124,11 @@ export default function LessonsClient({
 
                                     <div>
                                         <div className="flex items-center gap-2 mb-1">
-                                            <span className={`text-[10px] font-bold uppercase tracking-widest ${accentColor} bg-black/5 dark:bg-white/5 px-2 py-0.5 rounded-full`}>
-                                                {lesson.division}
+                                            <span 
+                                                className={`text-[10px] font-bold uppercase tracking-widest bg-black/5 dark:bg-white/5 px-2 py-0.5 rounded-full ${!customColor ? accentColor : ''}`}
+                                                style={customColor ? { color: customColor } : {}}
+                                            >
+                                                {lesson.category_name || lesson.division}
                                             </span>
                                         </div>
                                         <h4 className="font-bold text-lg leading-tight tracking-tight mb-2 group-hover:text-primary transition-colors text-slate-900 dark:text-white">
@@ -112,10 +137,16 @@ export default function LessonsClient({
                                     </div>
 
                                     <div className="flex items-center justify-between mt-2">
-                                        <span className={`text-[10px] font-bold uppercase tracking-widest ${accentColor}`}>
+                                        <span 
+                                            className={`text-[10px] font-bold uppercase tracking-widest ${!customColor ? accentColor : ''}`}
+                                            style={customColor ? { color: customColor } : {}}
+                                        >
                                             Start Lesson
                                         </span>
-                                        <span className="material-symbols-outlined text-sm opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all">
+                                        <span 
+                                            className="material-symbols-outlined text-sm opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all"
+                                            style={customColor ? { color: customColor } : {}}
+                                        >
                                             arrow_forward
                                         </span>
                                     </div>
@@ -131,7 +162,7 @@ export default function LessonsClient({
                                     <tr className="border-b border-black/5 dark:border-white/10 bg-black/[0.02] dark:bg-white/5">
                                         <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">#</th>
                                         <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Topic</th>
-                                        <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 text-center">Division</th>
+                                        <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 text-center">Category</th>
                                         <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 text-right">Action</th>
                                     </tr>
                                 </thead>
@@ -151,12 +182,18 @@ export default function LessonsClient({
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 text-center">
-                                                <span className={`text-[10px] font-bold uppercase tracking-widest ${accentColor} bg-black/5 dark:bg-white/5 px-3 py-1 rounded-full`}>
-                                                    {lesson.division}
+                                                <span 
+                                                    className={`text-[10px] font-bold uppercase tracking-widest bg-black/5 dark:bg-white/5 px-3 py-1 rounded-full ${!customColor ? accentColor : ''}`}
+                                                    style={customColor ? { color: customColor } : {}}
+                                                >
+                                                    {lesson.category_name || lesson.division}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 text-right">
-                                                <div className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-primary group-hover:text-primary/70 dark:group-hover:text-white transition-colors">
+                                                <div 
+                                                    className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-primary group-hover:text-primary/70 dark:group-hover:text-white transition-colors"
+                                                    style={customColor ? { color: customColor } : {}}
+                                                >
                                                     View
                                                     <span className="material-symbols-outlined text-sm">chevron_right</span>
                                                 </div>
@@ -186,7 +223,8 @@ export default function LessonsClient({
                             <button
                                 key={i}
                                 onClick={() => handlePageChange(i + 1)}
-                                className={`flex items-center justify-center size-10 rounded-xl text-xs font-bold transition-all ${currentPage === i + 1 ? 'bg-primary text-white shadow-lg shadow-primary/20 scale-110' : 'bg-black/5 dark:bg-white/5 text-slate-500 dark:text-slate-300 hover:text-primary dark:hover:text-primary border border-black/5 dark:border-white/10'}`}
+                                className={`flex items-center justify-center size-10 rounded-xl text-xs font-bold transition-all ${currentPage === i + 1 ? 'bg-primary text-white shadow-lg shadow-primary/20 scale-110' : 'bg-black/5 dark:bg-white/5 text-slate-500 dark:text-slate-300 border border-black/5 dark:border-white/10'}`}
+                                style={(currentPage !== i + 1 && customColor) ? { color: customColor } : (currentPage === i + 1 && customColor ? { backgroundColor: customColor } : {})}
                             >
                                 {i + 1}
                             </button>
