@@ -23,7 +23,7 @@ interface LessonsClientProps {
     customColor?: string;
 }
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 25;
 
 // Helper to convert hex to rgba
 const hexToRgba = (hex: string, opacity: number) => {
@@ -48,10 +48,14 @@ export default function LessonsClient({
 
     const totalPages = Math.ceil(initialLessons.length / ITEMS_PER_PAGE);
 
+    const sortedLessons = useMemo(() => {
+        return [...initialLessons].sort((a, b) => a.id - b.id);
+    }, [initialLessons]);
+
     const currentLessons = useMemo(() => {
         const start = (currentPage - 1) * ITEMS_PER_PAGE;
-        return initialLessons.slice(start, start + ITEMS_PER_PAGE);
-    }, [initialLessons, currentPage]);
+        return sortedLessons.slice(start, start + ITEMS_PER_PAGE);
+    }, [sortedLessons, currentPage]);
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
@@ -125,7 +129,7 @@ export default function LessonsClient({
                                     <div>
                                         <div className="flex items-center gap-2 mb-1">
                                             <span 
-                                                className={`text-[10px] font-bold uppercase tracking-widest bg-black/5 dark:bg-white/5 px-2 py-0.5 rounded-full ${!customColor ? accentColor : ''}`}
+                                                className={`text-[10px] font-bold uppercase tracking-widest bg-black/10 dark:bg-white/10 px-2 py-0.5 rounded-full ${!customColor ? accentColor : ''}`}
                                                 style={customColor ? { color: customColor } : {}}
                                             >
                                                 {lesson.category_name || lesson.division}
@@ -160,10 +164,9 @@ export default function LessonsClient({
                             <table className="w-full text-left border-collapse">
                                 <thead>
                                     <tr className="border-b border-black/5 dark:border-white/10 bg-black/[0.02] dark:bg-white/5">
-                                        <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">#</th>
-                                        <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Topic</th>
-                                        <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 text-center">Category</th>
-                                        <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 text-right">Action</th>
+                                        <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-600 dark:text-slate-300">#</th>
+                                        <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-600 dark:text-slate-300">Topic</th>
+                                        <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-600 dark:text-slate-300 text-right">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -173,21 +176,13 @@ export default function LessonsClient({
                                             onClick={() => router.push(`${basePath}/${lesson.id}`)}
                                             className="border-b border-black/5 dark:border-white/5 hover:bg-black/[0.02] dark:hover:bg-white/5 transition-colors group cursor-pointer"
                                         >
-                                            <td className="px-6 py-4 text-sm font-medium text-slate-500 dark:text-slate-400">
+                                            <td className="px-6 py-4 text-sm font-bold text-slate-600 dark:text-slate-300">
                                                 {(currentPage - 1) * ITEMS_PER_PAGE + idx + 1}
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="font-bold text-slate-900 dark:text-slate-100 group-hover:text-primary transition-colors">
                                                     {lesson.topic}
                                                 </div>
-                                            </td>
-                                            <td className="px-6 py-4 text-center">
-                                                <span 
-                                                    className={`text-[10px] font-bold uppercase tracking-widest bg-black/5 dark:bg-white/5 px-3 py-1 rounded-full ${!customColor ? accentColor : ''}`}
-                                                    style={customColor ? { color: customColor } : {}}
-                                                >
-                                                    {lesson.category_name || lesson.division}
-                                                </span>
                                             </td>
                                             <td className="px-6 py-4 text-right">
                                                 <div 
@@ -223,8 +218,8 @@ export default function LessonsClient({
                             <button
                                 key={i}
                                 onClick={() => handlePageChange(i + 1)}
-                                className={`flex items-center justify-center size-10 rounded-xl text-xs font-bold transition-all ${currentPage === i + 1 ? 'bg-primary text-white shadow-lg shadow-primary/20 scale-110' : 'bg-black/5 dark:bg-white/5 text-slate-500 dark:text-slate-300 border border-black/5 dark:border-white/10'}`}
-                                style={(currentPage !== i + 1 && customColor) ? { color: customColor } : (currentPage === i + 1 && customColor ? { backgroundColor: customColor } : {})}
+                                className={`flex items-center justify-center size-10 rounded-xl text-xs font-bold transition-all ${currentPage === i + 1 ? 'bg-primary text-white shadow-lg shadow-primary/20 scale-110' : 'bg-black/5 dark:bg-white/5 text-slate-600 dark:text-slate-300 border border-black/5 dark:border-white/10 hover:border-primary/50'}`}
+                                style={currentPage === i + 1 && customColor ? { backgroundColor: customColor } : {}}
                             >
                                 {i + 1}
                             </button>
