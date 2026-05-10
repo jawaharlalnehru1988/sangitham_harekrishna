@@ -2,6 +2,7 @@ import Header from "@/components/layout/Header";
 import HeroCarousel from "@/components/home/HeroCarousel";
 import FeatureGrid from "@/components/home/FeatureGrid";
 import KacheriSection from "@/components/home/KacheriSection";
+import PracticeSection from "@/components/home/PracticeSection";
 import QuestionsSection from "@/components/home/QuestionsSection";
 import LearningPath from "@/components/home/LearningPath";
 import OtherWebsites from "@/components/home/OtherWebsites";
@@ -15,6 +16,7 @@ export default function Home() {
       <div role="main" className="flex-grow pb-32">
         <HeroCarousel />
         <QuoteSection />
+        <PracticeSection />
         <FeatureGrid />
         <KacheriSection />
         <LearningPath />
