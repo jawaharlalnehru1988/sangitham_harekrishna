@@ -13,6 +13,7 @@ export const metadata: Metadata = {
 };
 
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { GoogleAuthProvider } from "@/components/providers/GoogleAuthProvider";
 
 export default function RootLayout({
   children,
@@ -48,9 +49,11 @@ export default function RootLayout({
       <body
         className={`${plusJakartaSans.variable} antialiased bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen mandala-bg font-display`}
       >
-        <ThemeProvider>
-          {children}
-        </ThemeProvider>
+        <GoogleAuthProvider>
+          <ThemeProvider>
+            {children}
+          </ThemeProvider>
+        </GoogleAuthProvider>
       </body>
     </html>
   );

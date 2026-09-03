@@ -104,7 +104,7 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
                 <div className="max-w-4xl mx-auto">
                     <div className="mb-8">
                         <Link 
-                            href="/" 
+                            href="/#categories" 
                             className="flex items-center gap-1 text-sm font-bold uppercase tracking-wider mb-4 hover:opacity-80 transition-opacity"
                             style={{ color: colorCode }}
                         >

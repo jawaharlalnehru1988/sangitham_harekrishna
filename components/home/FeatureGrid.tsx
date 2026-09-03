@@ -93,15 +93,33 @@ const FeatureGrid = () => {
         return null;
     }
 
+    // Display up to 6 categories on the home page
+    const displayedCategories = categories.slice(0, 6);
+
     return (
-        <section className="px-4 pt-10">
+        <section id="categories" className="px-4 pt-10 scroll-mt-20">
             <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-extrabold tracking-tight">Explore Categories</h3>
-                <span className="text-primary text-sm font-bold uppercase tracking-widest cursor-pointer hover:underline">View All</span>
+                <div>
+                    <h3 className="text-xl font-extrabold tracking-tight">Explore Categories</h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium uppercase tracking-wider">
+                        Foundations, varisais, geethams & theoretical knowledge
+                    </p>
+                </div>
+                <div className="flex items-center gap-3">
+                    <Link
+                        href="/categories"
+                        className="text-primary text-sm font-bold uppercase tracking-widest cursor-pointer hover:underline"
+                    >
+                        View All
+                    </Link>
+                    <span className="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-full">
+                        category
+                    </span>
+                </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {categories.map((cat) => (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
+                {displayedCategories.map((cat) => (
                     <Link
                         key={cat.id}
                         href={cat.href}

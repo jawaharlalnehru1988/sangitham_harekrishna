@@ -3,9 +3,8 @@ import HeroCarousel from "@/components/home/HeroCarousel";
 import FeatureGrid from "@/components/home/FeatureGrid";
 import KacheriSection from "@/components/home/KacheriSection";
 import PracticeSection from "@/components/home/PracticeSection";
-import QuestionsSection from "@/components/home/QuestionsSection";
-import LearningPath from "@/components/home/LearningPath";
-import OtherWebsites from "@/components/home/OtherWebsites";
+import RagamSection from "@/components/home/RagamSection";
+import MridangaSection from "@/components/home/MridangaSection";
 import QuoteSection from "@/components/home/QuoteSection";
 import Footer from "@/components/layout/Footer";
 
@@ -17,11 +16,10 @@ export default function Home() {
         <HeroCarousel />
         <QuoteSection />
         <PracticeSection />
+        <MridangaSection />
+        <RagamSection />
         <FeatureGrid />
         <KacheriSection />
-        <LearningPath />
-        {/* <OtherWebsites /> */}
-        <QuestionsSection />
       </div>
       <Footer />
     </div>

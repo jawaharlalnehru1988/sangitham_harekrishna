@@ -42,6 +42,8 @@ const getYouTubeId = (url: string) => {
     return (match && match[2].length === 11) ? match[2] : null;
 };
 
+import SequentialYouTubePlayer from '@/components/common/SequentialYouTubePlayer';
+
 export default function LessonDetailPage({ params }: { params: Promise<{ slug: string, id: string }> }) {
     const [lesson, setLesson] = useState<Lesson | null>(null);
     const [prevLesson, setPrevLesson] = useState<Lesson | null>(null);
@@ -49,6 +51,7 @@ export default function LessonDetailPage({ params }: { params: Promise<{ slug: s
     const [colorCode, setColorCode] = useState<string>('#6366f1');
     const [loading, setLoading] = useState(true);
     const [slug, setSlug] = useState('');
+    const [activePlayingKey, setActivePlayingKey] = useState<string | null>(null);
 
     useEffect(() => {
         const loadData = async () => {
@@ -174,25 +177,42 @@ export default function LessonDetailPage({ params }: { params: Promise<{ slug: s
                     {/* Multi-Video Section */}
                     {lesson.videoSamples && lesson.videoSamples.length > 0 && (
                         <div className="mt-8 space-y-6">
-                            <h3 className="text-xl font-bold tracking-tight flex items-center gap-2">
-                                <span className="material-symbols-outlined" style={{ color: colorCode }}>video_library</span>
-                                Practice Videos
-                            </h3>
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-xl font-bold tracking-tight flex items-center gap-2">
+                                    <span className="material-symbols-outlined" style={{ color: colorCode }}>video_library</span>
+                                    Practice Videos ({lesson.videoSamples.length})
+                                </h3>
+                                <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">
+                                    <span className="material-symbols-outlined text-xs">autorenew</span>
+                                    Auto-Play Next
+                                </span>
+                            </div>
                             <div className="grid grid-cols-1 gap-6">
                                 {lesson.videoSamples.sort((a, b) => a.sort_order - b.sort_order).map((video, idx) => {
                                     const ytid = getYouTubeId(video.url);
                                     if (!ytid) return null;
+                                    const pKey = `category-lesson-${idx}`;
+                                    const isPlaying = activePlayingKey === pKey;
+
                                     return (
-                                        <div key={video.id} className="overflow-hidden rounded-3xl border border-black/5 dark:border-white/10 shadow-lg">
-                                            <div className="aspect-video w-full">
-                                                <iframe
-                                                    src={`https://www.youtube.com/embed/${ytid}`}
-                                                    title={`Practice Video ${idx + 1}`}
-                                                    className="w-full h-full"
-                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                                    allowFullScreen
-                                                />
-                                            </div>
+                                        <div 
+                                            key={video.id} 
+                                            className={`overflow-hidden rounded-3xl border shadow-lg transition-all duration-300 ${
+                                                isPlaying 
+                                                    ? 'border-primary ring-2 ring-primary/40 shadow-primary/20' 
+                                                    : 'border-black/5 dark:border-white/10'
+                                            }`}
+                                        >
+                                            <SequentialYouTubePlayer
+                                                videoId={ytid}
+                                                title={`Practice Video ${idx + 1}`}
+                                                playerKey={pKey}
+                                                seqIndex={idx}
+                                                onPlayStateChange={(playing) => {
+                                                    if (playing) setActivePlayingKey(pKey);
+                                                    else if (activePlayingKey === pKey) setActivePlayingKey(null);
+                                                }}
+                                            />
                                         </div>
                                     );
                                 })}
