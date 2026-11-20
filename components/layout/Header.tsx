@@ -23,6 +23,7 @@ const getIconForCategory = (title: string) => {
     if (lowerTitle.includes('advanced')) return "star";
     if (lowerTitle.includes('varisai') || lowerTitle.includes('swaravali')) return "queue_music";
     if (lowerTitle.includes('alankaram') || lowerTitle.includes('tala')) return "format_list_numbered";
+    if (lowerTitle.includes('swarajati') || lowerTitle.includes('swarajathi') || lowerTitle.includes('jatiswaram') || lowerTitle.includes('jathiswaram')) return "queue_music";
     if (lowerTitle.includes('geetham') || lowerTitle.includes('kriti') || lowerTitle.includes('varnam')) return "library_music";
     return "library_music";
 };
@@ -297,7 +298,7 @@ const Header = () => {
                             </span>
                             <input
                                 type="text"
-                                placeholder="Search category (e.g. Sarali, Dhattu, Mridanga)..."
+                                placeholder="Search category (e.g. Sarali, Nottuswaram, Swarajati, Dhattu)..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="w-full pl-9 pr-3 py-2 text-xs rounded-xl bg-white/70 dark:bg-black/30 border border-primary/20 focus:outline-none focus:border-primary text-slate-900 dark:text-white placeholder:text-slate-400"
@@ -314,36 +315,114 @@ const Header = () => {
                         </div>
                     </div>
 
-                    {/* Featured Mridanga Quick Link */}
-                    {(!searchTerm || 'mridanga tala percussion daspahira kaharba dadra lofa rupak'.includes(searchTerm.toLowerCase())) && (
-                        <div className="p-2 border-b border-primary/10 bg-primary/5">
+                    {/* Featured Traditions Quick Links */}
+                    {(!searchTerm || 'carnatic hindustani mridanga kartal tala practice sangeet'.includes(searchTerm.toLowerCase())) && (
+                        <div className="p-2 border-b border-primary/10 bg-primary/5 space-y-1.5">
+                            <Link
+                                href="/practice"
+                                onClick={() => setIsMenuOpen(false)}
+                                className="flex items-center gap-3 p-2 rounded-xl bg-primary/10 hover:bg-primary/20 border border-primary/20 transition-all group"
+                            >
+                                <div className="size-8 rounded-lg flex items-center justify-center shrink-0 bg-primary text-slate-950 font-bold">
+                                    <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: "'FILL' 1" }}>
+                                        queue_music
+                                    </span>
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-1.5">
+                                        <h4 className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">
+                                            Carnatic Music Lessons
+                                        </h4>
+                                        <span className="text-[8px] font-extrabold uppercase px-1 py-0.2 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">
+                                            Active
+                                        </span>
+                                    </div>
+                                    <span className="text-[10px] text-slate-500 dark:text-slate-400">
+                                        Sarali, Geethams, Nottuswarams &amp; Ragas
+                                    </span>
+                                </div>
+                                <span className="material-symbols-outlined text-xs text-primary group-hover:translate-x-0.5 transition-all">
+                                    arrow_forward
+                                </span>
+                            </Link>
+
                             <Link
                                 href="/mridanga"
                                 onClick={() => setIsMenuOpen(false)}
-                                className="flex items-center gap-3 p-2.5 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 transition-all group"
+                                className="flex items-center gap-3 p-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 transition-all group"
                             >
-                                <div className="size-9 rounded-xl flex items-center justify-center shrink-0 bg-primary text-slate-950 font-bold">
-                                    <span className="material-symbols-outlined text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>
+                                <div className="size-8 rounded-lg flex items-center justify-center shrink-0 bg-primary text-slate-950 font-bold">
+                                    <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: "'FILL' 1" }}>
                                         graphic_eq
                                     </span>
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-1.5">
                                         <h4 className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">
-                                            Mridanga Lessons Directory
+                                            Sri Khol Mridanga Lessons
                                         </h4>
-                                        <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-primary text-slate-900">
-                                            Talas &amp; Bols
+                                        <span className="text-[8px] font-extrabold uppercase px-1 py-0.2 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">
+                                            Active
                                         </span>
                                     </div>
                                     <span className="text-[10px] text-slate-500 dark:text-slate-400">
-                                        Daspahira, Kaharba, Dadra, Lofa &amp; more
+                                        Daspahira, Kaharba, Dadra, Lofa &amp; Bols
                                     </span>
                                 </div>
-                                <span className="material-symbols-outlined text-sm text-primary group-hover:translate-x-0.5 transition-all">
+                                <span className="material-symbols-outlined text-xs text-primary group-hover:translate-x-0.5 transition-all">
                                     arrow_forward
                                 </span>
                             </Link>
+
+                            <div className="grid grid-cols-3 gap-1.5 pt-0.5">
+                                <Link
+                                    href="/hindustani"
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="flex items-center gap-1.5 p-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 transition-all group"
+                                >
+                                    <span className="material-symbols-outlined text-sm text-purple-600 dark:text-purple-400">
+                                        music_note
+                                    </span>
+                                    <div className="min-w-0">
+                                        <p className="text-[10px] font-bold text-slate-900 dark:text-white truncate">
+                                            Hindustani
+                                        </p>
+                                        <span className="text-[8px] text-amber-500 font-semibold">Soon</span>
+                                    </div>
+                                </Link>
+
+                                <Link
+                                    href="/kartal"
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="flex items-center gap-1.5 p-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 transition-all group"
+                                >
+                                    <span className="material-symbols-outlined text-sm text-amber-600 dark:text-amber-400">
+                                        timelapse
+                                    </span>
+                                    <div className="min-w-0">
+                                        <p className="text-[10px] font-bold text-slate-900 dark:text-white truncate">
+                                            Kartal
+                                        </p>
+                                        <span className="text-[8px] text-emerald-500 font-semibold">Active</span>
+                                    </div>
+                                </Link>
+
+                                <Link
+                                    href="/harmonium"
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="flex items-center gap-1.5 p-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 transition-all group"
+                                >
+                                    <span className="material-symbols-outlined text-sm text-emerald-600 dark:text-emerald-400">
+                                        piano
+                                    </span>
+                                    <div className="min-w-0">
+                                        <p className="text-[10px] font-bold text-slate-900 dark:text-white truncate">
+                                            Harmonium
+                                        </p>
+                                        <span className="text-[8px] text-emerald-500 font-semibold">Active</span>
+                                    </div>
+                                </Link>
+                            </div>
                         </div>
                     )}
 
@@ -407,7 +486,7 @@ const Header = () => {
                             <span className="material-symbols-outlined text-sm">home</span>
                             Home
                         </Link>
-                        <span className="text-slate-400 font-normal">Carnatic Music Platform</span>
+                        <span className="text-slate-400 font-normal">Haribol Sangeet Platform</span>
                     </div>
                 </div>
             )}

@@ -6,6 +6,7 @@ import axios from 'axios';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { API_BASE_URL } from '@/lib/constants';
+import ShareButton from '@/components/common/ShareButton';
 
 interface CategoryData {
     id: number;
@@ -32,6 +33,9 @@ const getIconForCategory = (title: string) => {
     if (lowerTitle.includes('question')) return "quiz";
     if (lowerTitle.includes('theory')) return "menu_book";
     if (lowerTitle.includes('advanced')) return "star";
+    if (lowerTitle.includes('nottu') || lowerTitle.includes('nottuswaram')) return "music_note";
+    if (lowerTitle.includes('swarajati') || lowerTitle.includes('swarajathi') || lowerTitle.includes('jatiswaram') || lowerTitle.includes('jathiswaram')) return "queue_music";
+    if (lowerTitle.includes('varnam')) return "stars";
     return "library_music";
 };
 
@@ -59,7 +63,7 @@ export default function AllCategoriesPage() {
                         colorCode: cat.colorCode || '#6366f1',
                         order: cat.order || 0,
                         icon: getIconForCategory(cat.name),
-                        href: `/category/${slug}`
+                        href: `/practice?category=${encodeURIComponent(cat.name)}`
                     };
                 });
 
@@ -103,8 +107,16 @@ export default function AllCategoriesPage() {
                                     Explore foundational exercises, varisais, geethams, varnams, kritis, and musicology
                                 </p>
                             </div>
-                            <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-black/5 dark:bg-white/5 px-4 py-2 rounded-xl border border-black/5 dark:border-white/10 shrink-0 self-start md:self-auto">
-                                {filteredCategories.length} {filteredCategories.length === 1 ? 'Category' : 'Categories'}
+                            <div className="flex items-center gap-3 shrink-0 self-start md:self-auto">
+                                <ShareButton
+                                    title="All Syllabus Categories - Carnatic Music Platform"
+                                    text="Explore foundational exercises, varisais, geethams, varnams, kritis, and musicology."
+                                    variant="pill"
+                                    label="Share Syllabus"
+                                />
+                                <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-black/5 dark:bg-white/5 px-4 py-2 rounded-xl border border-black/5 dark:border-white/10">
+                                    {filteredCategories.length} {filteredCategories.length === 1 ? 'Category' : 'Categories'}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -206,13 +218,22 @@ export default function AllCategoriesPage() {
                                         >
                                             Explore Lessons
                                         </span>
-                                        <div
-                                            className="flex size-7 items-center justify-center rounded-lg transition-transform group-hover:translate-x-1"
-                                            style={{ backgroundColor: hexToRgba(cat.colorCode, 0.18), color: cat.colorCode }}
-                                        >
-                                            <span className="material-symbols-outlined text-sm">
-                                                arrow_forward
-                                            </span>
+                                        <div className="flex items-center gap-2">
+                                            <ShareButton
+                                                title={`${cat.name} - Carnatic Music Syllabus`}
+                                                category={cat.name}
+                                                url={cat.href}
+                                                text={`Explore all lessons and syllabus topics in ${cat.name}.`}
+                                                variant="icon"
+                                            />
+                                            <div
+                                                className="flex size-7 items-center justify-center rounded-lg transition-transform group-hover:translate-x-1"
+                                                style={{ backgroundColor: hexToRgba(cat.colorCode, 0.18), color: cat.colorCode }}
+                                            >
+                                                <span className="material-symbols-outlined text-sm">
+                                                    arrow_forward
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </Link>

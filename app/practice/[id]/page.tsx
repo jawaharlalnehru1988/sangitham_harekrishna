@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import axios from 'axios';
 import { API_BASE_URL } from '@/lib/constants';
 
@@ -46,27 +46,95 @@ const getYouTubeId = (url: string) => {
 };
 
 import SequentialYouTubePlayer from '@/components/common/SequentialYouTubePlayer';
+import ShareButton from '@/components/common/ShareButton';
 
 export default function PracticeLessonDetailPage({ params }: { params: Promise<{ id: string }> }) {
-    const [lesson, setLesson] = useState<PracticeLesson | null>(null);
-    const [allLessons, setAllLessons] = useState<PracticeLesson[]>([]);
+    const routeParams = useParams();
+    const id = (routeParams?.id as string) || '';
+
+    // Cache-first initialization to prevent reload wipe / skeleton flash on mobile tab resume
+    const [lesson, setLesson] = useState<PracticeLesson | null>(() => {
+        if (typeof window === 'undefined' || !id) return null;
+        try {
+            const cached = sessionStorage.getItem(`cached_practice_lesson_${id}`);
+            if (cached) return JSON.parse(cached);
+        } catch (e) {}
+        return null;
+    });
+
+    const [allLessons, setAllLessons] = useState<PracticeLesson[]>(() => {
+        if (typeof window === 'undefined' || !id) return [];
+        try {
+            const cached = sessionStorage.getItem(`cached_practice_all_${id}`);
+            if (cached) return JSON.parse(cached);
+        } catch (e) {}
+        return [];
+    });
+
+    const [loading, setLoading] = useState<boolean>(() => {
+        if (typeof window === 'undefined' || !id) return true;
+        try {
+            return !sessionStorage.getItem(`cached_practice_lesson_${id}`);
+        } catch (e) {
+            return true;
+        }
+    });
+
     const [prevLesson, setPrevLesson] = useState<PracticeLesson | null>(null);
     const [nextLesson, setNextLesson] = useState<PracticeLesson | null>(null);
-    const [loading, setLoading] = useState(true);
     const [activeAudioId, setActiveAudioId] = useState<number | null>(null);
     const [activePlayingKey, setActivePlayingKey] = useState<string | null>(null);
     const audioRefs = useRef<{ [key: number]: HTMLAudioElement | null }>({});
 
+    // Restore scroll position
     useEffect(() => {
+        if (!id || typeof window === 'undefined') return;
+        const scrollKey = `practice_scroll_${id}`;
+        let scrollTimeout: NodeJS.Timeout;
+
+        const handleScroll = () => {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                try {
+                    sessionStorage.setItem(scrollKey, window.scrollY.toString());
+                } catch (e) {}
+            }, 150);
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+
+        try {
+            const savedScroll = sessionStorage.getItem(scrollKey);
+            if (savedScroll) {
+                setTimeout(() => {
+                    window.scrollTo({ top: parseFloat(savedScroll), behavior: 'instant' });
+                }, 100);
+            }
+        } catch (e) {}
+
+        return () => {
+            clearTimeout(scrollTimeout);
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, [id]);
+
+    useEffect(() => {
+        let isCurrent = true;
+
         const loadLesson = async () => {
             try {
-                const resolvedParams = await params;
-                const { id } = resolvedParams;
+                const effectiveId = id || (await params).id;
+                if (!effectiveId) return;
 
                 // 1. Fetch single lesson
-                const res = await axios.get(`${API_BASE_URL}/carnatic-lesson-practice/${id}/`);
+                const res = await axios.get(`${API_BASE_URL}/carnatic-lesson-practice/${effectiveId}/`);
                 const currentLesson: PracticeLesson = res.data;
+                if (!isCurrent) return;
+
                 setLesson(currentLesson);
+                try {
+                    sessionStorage.setItem(`cached_practice_lesson_${effectiveId}`, JSON.stringify(currentLesson));
+                } catch (e) {}
 
                 // 2. Fetch lessons and filter strictly within the SAME category for sequential navigation
                 const allRes = await axios.get(`${API_BASE_URL}/carnatic-lesson-practice/`);
@@ -80,9 +148,13 @@ export default function PracticeLessonDetailPage({ params }: { params: Promise<{
                         return orderA - orderB;
                     });
 
+                if (!isCurrent) return;
                 setAllLessons(sameCategoryLessons);
+                try {
+                    sessionStorage.setItem(`cached_practice_all_${effectiveId}`, JSON.stringify(sameCategoryLessons));
+                } catch (e) {}
 
-                const currentIdx = sameCategoryLessons.findIndex(l => Number(l.id) === Number(id));
+                const currentIdx = sameCategoryLessons.findIndex(l => Number(l.id) === Number(effectiveId));
                 if (currentIdx !== -1) {
                     setPrevLesson(currentIdx > 0 ? sameCategoryLessons[currentIdx - 1] : null);
                     setNextLesson(currentIdx < sameCategoryLessons.length - 1 ? sameCategoryLessons[currentIdx + 1] : null);
@@ -90,12 +162,16 @@ export default function PracticeLessonDetailPage({ params }: { params: Promise<{
             } catch (err) {
                 console.error('Error loading practice lesson:', err);
             } finally {
-                setLoading(false);
+                if (isCurrent) setLoading(false);
             }
         };
 
         loadLesson();
-    }, [params]);
+
+        return () => {
+            isCurrent = false;
+        };
+    }, [id]);
 
     const handleAudioPlay = (audioId: number) => {
         Object.entries(audioRefs.current).forEach(([key, audioEl]) => {
@@ -160,14 +236,23 @@ export default function PracticeLessonDetailPage({ params }: { params: Promise<{
                         <div className="absolute -right-8 -top-8 size-40 rounded-full blur-3xl opacity-50 bg-primary/20" />
 
                         <div className="relative z-10">
-                            <div className="flex flex-wrap items-center gap-2 mb-3">
-                                <span className="text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full text-white bg-primary inline-block">
-                                    {lesson.PracticeCategory}
-                                </span>
-                                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                                    {audiosToDisplay.length} Audio Part{audiosToDisplay.length === 1 ? '' : 's'}
-                                    {videosToDisplay.length > 0 && ` • ${videosToDisplay.length} Video${videosToDisplay.length === 1 ? '' : 's'}`}
-                                </span>
+                            <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <span className="text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full text-white bg-primary inline-block">
+                                        {lesson.PracticeCategory}
+                                    </span>
+                                    <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                                        {audiosToDisplay.length} Audio Part{audiosToDisplay.length === 1 ? '' : 's'}
+                                        {videosToDisplay.length > 0 && ` • ${videosToDisplay.length} Video${videosToDisplay.length === 1 ? '' : 's'}`}
+                                    </span>
+                                </div>
+                                <ShareButton
+                                    title={lesson.lessonName}
+                                    category={lesson.PracticeCategory}
+                                    text={`Practice ${lesson.lessonName} with interactive audio tracks, swaram notation, and video tutorials.`}
+                                    variant="pill"
+                                    label="Share Lesson"
+                                />
                             </div>
 
                             <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">

@@ -7,6 +7,7 @@ import axios from 'axios';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { API_BASE_URL } from '@/lib/constants';
+import ShareButton from '@/components/common/ShareButton';
 
 interface MridangaAudio {
     id: number;
@@ -154,7 +155,6 @@ export default function MridangaLessonDetailPage({ params }: { params: Promise<{
     };
 
     const videos = lesson.videos || [];
-    const kirtanDemos = lesson.kirtan_demos || [];
     const audios = lesson.audios || [];
 
     return (
@@ -174,14 +174,23 @@ export default function MridangaLessonDetailPage({ params }: { params: Promise<{
                     {/* Lesson Header Card */}
                     <div className="bg-white dark:bg-background-dark/80 rounded-3xl border border-black/5 dark:border-white/10 p-6 md:p-8 mb-8 shadow-sm relative overflow-hidden">
                         <div className="relative z-10">
-                            <div className="flex flex-wrap items-center gap-2.5 mb-3">
-                                {getLevelBadge(lesson.level)}
-                                {lesson.matras && (
-                                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20">
-                                        {lesson.matras} Matras (Beats)
-                                    </span>
-                                )}
-                                <span className="text-xs text-slate-400 font-medium">• Gaudiya Percussion</span>
+                            <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+                                <div className="flex flex-wrap items-center gap-2.5">
+                                    {getLevelBadge(lesson.level)}
+                                    {lesson.matras && (
+                                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20">
+                                            {lesson.matras} Matras (Beats)
+                                        </span>
+                                    )}
+                                    <span className="text-xs text-slate-400 font-medium">• Gaudiya Percussion</span>
+                                </div>
+                                <ShareButton
+                                    title={lesson.tala_name}
+                                    category={lesson.tala_category}
+                                    text={lesson.description || `Learn ${lesson.tala_name} with bols, audio, and video tutorials on Carnatic Music Platform.`}
+                                    variant="pill"
+                                    label="Share Lesson"
+                                />
                             </div>
 
                             <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-4">
@@ -377,94 +386,7 @@ export default function MridangaLessonDetailPage({ params }: { params: Promise<{
                         </div>
                     )}
 
-                    {/* Kirtan Application Video Demos Section */}
-                    {kirtanDemos.length > 0 && (
-                        <div className="bg-white dark:bg-background-dark/60 rounded-3xl border border-black/5 dark:border-white/10 p-6 md:p-8 mb-8 shadow-sm">
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
-                                <div className="flex items-center gap-2.5">
-                                    <span className="material-symbols-outlined text-amber-500 text-2xl">live_tv</span>
-                                    <div>
-                                        <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                                            Live Kirtan Application Demos ({kirtanDemos.length})
-                                        </h2>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400">
-                                            Real-world kirtan accompanying demonstrations, arati prayers, and responsive chanting
-                                        </p>
-                                    </div>
-                                </div>
-                                <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 self-start sm:self-auto">
-                                    <span className="material-symbols-outlined text-xs">autorenew</span>
-                                    Continuous Playback
-                                </span>
-                            </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {kirtanDemos.map((demo, idx) => {
-                                    const videoId = getYouTubeId(demo.youtubevideoUrl);
-                                    if (!videoId) return null;
-                                    const pKey = `mridanga-demo-${idx}`;
-                                    const isPlaying = activePlayingKey === pKey;
-
-                                    return (
-                                        <div
-                                            key={demo.id || idx}
-                                            className={`overflow-hidden rounded-2xl border bg-slate-50 dark:bg-black/20 p-4 flex flex-col justify-between transition-all duration-300 group ${
-                                                isPlaying
-                                                    ? 'border-primary shadow-lg shadow-primary/20 ring-2 ring-primary/30'
-                                                    : 'border-black/5 dark:border-white/10 hover:border-primary/30'
-                                            }`}
-                                        >
-                                            <div>
-                                                <div className="flex items-center justify-between gap-2 mb-2">
-                                                    <div className="flex items-center gap-2">
-                                                        <div className={`flex size-6 shrink-0 items-center justify-center rounded-lg font-bold text-xs ${isPlaying ? 'bg-primary text-slate-950' : 'bg-amber-500/10 text-amber-500'}`}>
-                                                            {idx + 1}
-                                                        </div>
-                                                        <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
-                                                            Live Kirtan Demo
-                                                        </span>
-                                                    </div>
-                                                    {isPlaying && (
-                                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary text-slate-950 animate-pulse">
-                                                            <span className="material-symbols-outlined text-xs">play_arrow</span>
-                                                            Playing
-                                                        </span>
-                                                    )}
-                                                </div>
-                                                <h4 className="font-bold text-sm text-slate-900 dark:text-white line-clamp-2 leading-snug mb-3">
-                                                    {demo.title || `Kirtan Application Demo ${idx + 1}`}
-                                                </h4>
-
-                                                <SequentialYouTubePlayer
-                                                    videoId={videoId}
-                                                    title={demo.title || `Kirtan Application Demo ${idx + 1}`}
-                                                    playerKey={pKey}
-                                                    seqIndex={videos.length + idx}
-                                                    onPlayStateChange={(playing) => {
-                                                        if (playing) setActivePlayingKey(pKey);
-                                                        else if (activePlayingKey === pKey) setActivePlayingKey(null);
-                                                    }}
-                                                />
-
-                                                {/* Individual Demo Mantras & Notes Box */}
-                                                {demo.mantras_and_notes && (
-                                                    <div className="mt-2 bg-white dark:bg-black/40 rounded-xl p-3 border border-black/5 dark:border-white/5">
-                                                        <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1">
-                                                            <span className="material-symbols-outlined text-xs">edit_note</span>
-                                                            Demo Accompanying Notes
-                                                        </div>
-                                                        <pre className="font-mono text-xs font-semibold text-slate-800 dark:text-slate-200 whitespace-pre-wrap leading-relaxed">
-                                                            {demo.mantras_and_notes}
-                                                        </pre>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    )}
 
                     {/* Previous / Next Lesson Navigation */}
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-black/5 dark:border-white/10">

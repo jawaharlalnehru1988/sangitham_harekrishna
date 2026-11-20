@@ -7,6 +7,8 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import axios from 'axios';
 import { API_BASE_URL } from '@/lib/constants';
+import ShareButton from '@/components/common/ShareButton';
+import RagamSection from '@/components/home/RagamSection';
 
 interface PracticeAudio {
     id: number;
@@ -72,6 +74,48 @@ const getCategoryMeta = (catName: string): { icon: string; description: string }
             description: 'Mastery of the seven primary rhythmic tala systems (Dhruva, Matya, Rupaka, Jhampa, Triputa, Ata, Eka) set to swaras.',
         };
     }
+    if (lower.includes('geetham') || lower.includes('githam')) {
+        return {
+            icon: 'library_music',
+            description: 'Simple melodic compositions in praise of the Divine, uniting swaram and sahityam to teach sahitya bhava and raga swarupa.',
+        };
+    }
+    if (lower.includes('nottu') || lower.includes('nottuswaram')) {
+        return {
+            icon: 'music_note',
+            description: 'Charming Sanskrit compositions by Sri Muthuswami Dikshitar set to Shankarabharanam notes (Western air) in Tisra and Chaturasra Eka Talas.',
+        };
+    }
+    if (lower.includes('swarajati') || lower.includes('swarajathi')) {
+        return {
+            icon: 'queue_music',
+            description: 'Melodic compositions combining swaram and sahityam that bridge the gap between foundational geethams and varnams.',
+        };
+    }
+    if (lower.includes('jatiswaram') || lower.includes('jathiswaram')) {
+        return {
+            icon: 'music_note',
+            description: 'Melodic swara compositions set to intricate rhythmic jatis without sahityam, developing swarasthana precision and laya control before varnams.',
+        };
+    }
+    if (lower.includes('varnam')) {
+        return {
+            icon: 'stars',
+            description: 'Master pedagogical compositions encompassing raga swarupa, intricate gamakas, and speed transitions in Adi and Ata talams.',
+        };
+    }
+    if (lower.includes('kriti') || lower.includes('krithi')) {
+        return {
+            icon: 'library_music',
+            description: 'Major devotional compositions embodying raga bhava, sahitya aesthetics, sangathis, and chittaswarams composed by the Carnatic Trinity.',
+        };
+    }
+    if (lower.includes('kirtan') || lower.includes('keerthan')) {
+        return {
+            icon: 'temple_hindu',
+            description: 'Soul-stirring devotional compositions steeped in divine bhakti, nama mahima, and bhava composed by revered saint-singers.',
+        };
+    }
     return {
         icon: 'library_music',
         description: 'Structured melodic and rhythmic listening practice exercises with audio tracks and video demonstrations.',
@@ -135,22 +179,32 @@ function PracticeLessonsContent() {
             {/* Navigation Header */}
             <div className="mb-6 flex items-center justify-between">
                 <Link
-                    href="/#practice"
+                    href="/"
                     className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary hover:opacity-80 transition-opacity"
                 >
                     <span className="material-symbols-outlined text-base">arrow_back</span>
                     Back to Home
                 </Link>
 
-                {selectedCategory !== 'All' && (
-                    <button
-                        onClick={() => setSelectedCategory('All')}
-                        className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-primary transition-colors cursor-pointer"
+                <div className="flex items-center gap-2 sm:gap-3">
+                    <a
+                        href="#ragams"
+                        className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-primary bg-primary/10 hover:bg-primary/20 px-3 py-1.5 rounded-xl border border-primary/20 transition-all cursor-pointer"
                     >
-                        <span className="material-symbols-outlined text-sm">grid_view</span>
-                        View All Categories
-                    </button>
-                )}
+                        <span className="material-symbols-outlined text-sm">queue_music</span>
+                        <span>Raga Lessons ↓</span>
+                    </a>
+
+                    {selectedCategory !== 'All' && (
+                        <button
+                            onClick={() => setSelectedCategory('All')}
+                            className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-primary transition-colors cursor-pointer"
+                        >
+                            <span className="material-symbols-outlined text-sm">grid_view</span>
+                            View All Categories
+                        </button>
+                    )}
+                </div>
             </div>
 
             {/* Category Hero Banner */}
@@ -158,18 +212,27 @@ function PracticeLessonsContent() {
                 <div className="absolute -right-8 -top-8 size-44 rounded-full blur-3xl opacity-40 bg-primary/20" />
 
                 <div className="relative z-10">
-                    <div className="flex flex-wrap items-center gap-2 mb-3">
-                        <span className="text-[10px] font-extrabold uppercase tracking-widest px-3 py-1 rounded-full text-white bg-primary inline-flex items-center gap-1">
-                            <span className="material-symbols-outlined text-xs">
-                                {activeMeta ? activeMeta.icon : 'headphones'}
+                    <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+                        <div className="flex flex-wrap items-center gap-2">
+                            <span className="text-[10px] font-extrabold uppercase tracking-widest px-3 py-1 rounded-full text-white bg-primary inline-flex items-center gap-1">
+                                <span className="material-symbols-outlined text-xs">
+                                    {activeMeta ? activeMeta.icon : 'headphones'}
+                                </span>
+                                {selectedCategory === 'All' ? 'Complete Curriculum' : selectedCategory}
                             </span>
-                            {selectedCategory === 'All' ? 'Complete Curriculum' : selectedCategory}
-                        </span>
-                        <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                            {filteredLessons.length} {filteredLessons.length === 1 ? 'Exercise' : 'Exercises'}
-                            {categoryAudioCount > 0 && ` • ${categoryAudioCount} Audio Tracks`}
-                            {categoryVideoCount > 0 && ` • ${categoryVideoCount} Videos`}
-                        </span>
+                            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                                {filteredLessons.length} {filteredLessons.length === 1 ? 'Exercise' : 'Exercises'}
+                                {categoryAudioCount > 0 && ` • ${categoryAudioCount} Audio Tracks`}
+                                {categoryVideoCount > 0 && ` • ${categoryVideoCount} Videos`}
+                            </span>
+                        </div>
+                        <ShareButton
+                            title={selectedCategory === 'All' ? 'Carnatic Practice Series & Lessons' : `${selectedCategory} - Carnatic Music Syllabus`}
+                            category={selectedCategory}
+                            text={activeMeta ? activeMeta.description : 'Explore structured listening tracks, notation swarams, and video demonstrations.'}
+                            variant="pill"
+                            label={selectedCategory === 'All' ? 'Share Series' : 'Share Category'}
+                        />
                     </div>
 
                     <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
@@ -250,9 +313,18 @@ function PracticeLessonsContent() {
                                             </span>
                                         </div>
 
-                                        <span className="text-slate-400 group-hover:text-primary group-hover:translate-x-1 transition-all">
-                                            <span className="material-symbols-outlined text-xl">arrow_forward</span>
-                                        </span>
+                                        <div className="flex items-center gap-2">
+                                            <ShareButton
+                                                title={lesson.lessonName}
+                                                category={lesson.PracticeCategory}
+                                                url={`/practice/${lesson.id}`}
+                                                text={`Practice ${lesson.lessonName} with interactive audio tracks, swaram notation, and video tutorials.`}
+                                                variant="icon"
+                                            />
+                                            <span className="text-slate-400 group-hover:text-primary group-hover:translate-x-1 transition-all">
+                                                <span className="material-symbols-outlined text-xl">arrow_forward</span>
+                                            </span>
+                                        </div>
                                     </div>
 
                                     {/* Lesson Title */}
@@ -307,6 +379,11 @@ function PracticeLessonsContent() {
                     <p className="text-sm mt-1">Try selecting another category or clearing your search term.</p>
                 </div>
             )}
+
+            {/* Carnatic Raga Lessons Section */}
+            <div className="mt-16 pt-10 border-t border-black/10 dark:border-white/10">
+                <RagamSection />
+            </div>
         </div>
     );
 }

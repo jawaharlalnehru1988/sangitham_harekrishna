@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
 import { API_BASE_URL } from '@/lib/constants';
+import ShareButton from '@/components/common/ShareButton';
 
 interface TalaCategoryInfo {
     id: string;
@@ -106,6 +107,15 @@ const TALA_CATEGORIES: TalaCategoryInfo[] = [
         icon: 'surround_sound',
         badgeColor: 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/20',
     },
+    {
+        id: 'udaan',
+        name: 'Udaan (Pickup Beats)',
+        bengaliName: 'উড়ান বাজনা (Pickup & Lead-in Beats)',
+        matras: 'Pickup Phrases & Transitions (4, 8, 16 & 32 Beats)',
+        description: 'Dynamic pickup phrases and rhythmic takeoffs (উড়ান) used by mridanga players to initiate talas, catch the singer’s melody on the Samam, and seamlessly shift tempos during ecstatic kirtan.',
+        icon: 'flight_takeoff',
+        badgeColor: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
+    },
 ];
 
 interface MridangaLessonCount {
@@ -185,8 +195,17 @@ const MridangaSection = () => {
                                             {cat.matras}
                                         </span>
                                     </div>
-                                    <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                                        <span className="material-symbols-outlined text-base">arrow_forward</span>
+                                    <div className="flex items-center gap-2">
+                                        <ShareButton
+                                            title={`${cat.name} - Mridanga Lessons`}
+                                            category={cat.name}
+                                            url={`/mridanga?category=${cat.id}`}
+                                            text={cat.description}
+                                            variant="icon"
+                                        />
+                                        <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                                            <span className="material-symbols-outlined text-base">arrow_forward</span>
+                                        </div>
                                     </div>
                                 </div>
 

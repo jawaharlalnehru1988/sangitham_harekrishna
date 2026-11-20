@@ -6,6 +6,7 @@ import axios from 'axios';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { API_BASE_URL } from '@/lib/constants';
+import ShareButton from '@/components/common/ShareButton';
 
 interface RagamAudio {
     id: number;
@@ -105,8 +106,17 @@ export default function AllRagamsPage() {
                                     Comprehensive guide to Ragas, Lakshanas, Arohanam & Avarohanam, Audio Demonstrations & Compositions
                                 </p>
                             </div>
-                            <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-black/5 dark:bg-white/5 px-4 py-2 rounded-xl border border-black/5 dark:border-white/10 shrink-0 self-start md:self-auto">
-                                {filteredRagams.length} {filteredRagams.length === 1 ? 'Raga' : 'Ragas'}
+                            <div className="flex items-center gap-3 shrink-0 self-start md:self-auto">
+                                <ShareButton
+                                    title="Carnatic Raga Lessons Directory"
+                                    category="Ragas"
+                                    text="Comprehensive guide to Carnatic Ragas, Lakshanas, Arohanam & Avarohanam, and audio/video demonstrations."
+                                    variant="pill"
+                                    label="Share Ragas"
+                                />
+                                <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-black/5 dark:bg-white/5 px-4 py-2 rounded-xl border border-black/5 dark:border-white/10">
+                                    {filteredRagams.length} {filteredRagams.length === 1 ? 'Raga' : 'Ragas'}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -202,10 +212,19 @@ export default function AllRagamsPage() {
                                                         ? `Mela #${ragam.melakarthaNumber}`
                                                         : 'Janya Raga'}
                                                 </span>
-                                                <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                                                    <span className="material-symbols-outlined text-base">
-                                                        arrow_forward
-                                                    </span>
+                                                <div className="flex items-center gap-2">
+                                                    <ShareButton
+                                                        title={ragam.raga_name}
+                                                        category={ragam.melakarthaNumber ? `Melakarta #${ragam.melakarthaNumber}` : 'Carnatic Raga'}
+                                                        url={`/ragams/${ragam.id}`}
+                                                        text={`Explore ${ragam.raga_name} with arohanam-avarohanam, swarasthanas, and video tutorials.`}
+                                                        variant="icon"
+                                                    />
+                                                    <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                                                        <span className="material-symbols-outlined text-base">
+                                                            arrow_forward
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </div>
 

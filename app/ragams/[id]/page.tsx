@@ -7,6 +7,7 @@ import axios from 'axios';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { API_BASE_URL } from '@/lib/constants';
+import ShareButton from '@/components/common/ShareButton';
 
 interface RagamAudio {
     id: number;
@@ -15,6 +16,28 @@ interface RagamAudio {
     sort_order: number;
     created_at: string;
     updated_at: string;
+}
+
+interface RagamCompositionVideo {
+    id?: number;
+    title?: string;
+    youtubevideoUrl: string;
+    sort_order?: number;
+    created_at?: string;
+    updated_at?: string;
+}
+
+interface RagamFamousComposition {
+    id: number;
+    title: string;
+    composer?: string;
+    talam?: string;
+    lyrics?: string;
+    meaning?: string;
+    sort_order: number;
+    videos: RagamCompositionVideo[];
+    created_at?: string;
+    updated_at?: string;
 }
 
 interface RagamVideo {
@@ -33,6 +56,7 @@ interface RagamLesson {
     arohanam_avarohanam: string;
     description: string;
     famousCompositions: string;
+    famous_compositions?: RagamFamousComposition[];
     melakarthaNumber?: number | null;
     audios: RagamAudio[];
     videos: RagamVideo[];
@@ -72,7 +96,7 @@ const renderFormattedMarkdown = (content: string) => {
                         </h2>
                     );
                 }
-                if (trimmed.startsWith('- ')) {
+                if (trimmed.startsWith('- ') || trimmed.startsWith('• ')) {
                     const itemContent = trimmed.substring(2);
                     return (
                         <div key={idx} className="flex items-start gap-2.5 ml-1">
@@ -100,6 +124,217 @@ const renderFormattedMarkdown = (content: string) => {
                     />
                 );
             })}
+        </div>
+    );
+};
+
+const getTagBadge = (tag: string | null) => {
+    if (!tag) return null;
+    const lower = tag.toLowerCase();
+    if (lower.includes('concert') || lower.includes('kutcheri') || lower.includes('rendition')) {
+        return (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                <span className="material-symbols-outlined text-[12px]">mic</span>
+                {tag}
+            </span>
+        );
+    }
+    if (lower.includes('lesson') || lower.includes('tutorial') || lower.includes('class')) {
+        return (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                <span className="material-symbols-outlined text-[12px]">school</span>
+                {tag}
+            </span>
+        );
+    }
+    if (lower.includes('notation') || lower.includes('practice') || lower.includes('masterclass')) {
+        return (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+                <span className="material-symbols-outlined text-[12px]">menu_book</span>
+                {tag}
+            </span>
+        );
+    }
+    return (
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-primary/10 text-primary border border-primary/20">
+            <span className="material-symbols-outlined text-[12px]">play_circle</span>
+            {tag}
+        </span>
+    );
+};
+
+const VideoCard: React.FC<{
+    video: { id?: number; title?: string; youtubevideoUrl: string };
+    index: number;
+    parentTitle?: string;
+}> = ({ video, index, parentTitle }) => {
+    const videoId = getYouTubeId(video.youtubevideoUrl);
+    if (!videoId) return null;
+
+    const rawTitle = video.title || `Demonstration ${index + 1}`;
+    const tagMatch = rawTitle.match(/\[(.*?)\]/);
+    const tag = tagMatch ? tagMatch[1].trim() : null;
+    const cleanTitle = tagMatch ? rawTitle.replace(/\[(.*?)\]/, '').trim() : rawTitle;
+
+    return (
+        <div className="overflow-hidden rounded-2xl border border-black/5 dark:border-white/10 bg-slate-50 dark:bg-black/20 p-4 flex flex-col justify-between hover:border-primary/30 transition-all group">
+            <div className="mb-3">
+                <div className="flex items-center justify-between gap-2 mb-2">
+                    <div className="flex items-center gap-2 min-w-0">
+                        <div className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-red-500/10 text-red-500 font-bold text-xs">
+                            {index + 1}
+                        </div>
+                        {parentTitle && (
+                            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider truncate">
+                                {parentTitle}
+                            </span>
+                        )}
+                    </div>
+                    {getTagBadge(tag)}
+                </div>
+                <h4 className="font-bold text-sm text-slate-900 dark:text-white line-clamp-2 leading-snug">
+                    {cleanTitle}
+                </h4>
+            </div>
+
+            <div className="aspect-video w-full rounded-xl overflow-hidden bg-slate-950 shadow-inner">
+                <iframe
+                    src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0`}
+                    title={cleanTitle}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="w-full h-full border-0"
+                />
+            </div>
+        </div>
+    );
+};
+
+const CompositionCard: React.FC<{
+    comp: RagamFamousComposition;
+    index: number;
+}> = ({ comp, index }) => {
+    const hasLyrics = Boolean(comp.lyrics?.trim());
+    const hasMeaning = Boolean(comp.meaning?.trim());
+    const [activeTab, setActiveTab] = useState<'lyrics' | 'meaning'>(hasLyrics ? 'lyrics' : 'meaning');
+    const videos = comp.videos || [];
+
+    return (
+        <div className="bg-white dark:bg-background-dark/80 rounded-3xl border border-black/5 dark:border-white/10 p-6 md:p-8 shadow-sm transition-all hover:border-primary/30">
+            {/* Header */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-5 border-b border-black/5 dark:border-white/10">
+                <div>
+                    <div className="flex items-center gap-2 mb-2">
+                        <span className="inline-flex items-center justify-center size-6 rounded-lg bg-primary/10 text-primary font-bold text-xs">
+                            {index + 1}
+                        </span>
+                        <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                            Famous Composition #{index + 1}
+                        </span>
+                    </div>
+                    <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                        {comp.title}
+                    </h3>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                    {comp.talam && (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                            <span className="material-symbols-outlined text-[14px]">timer</span>
+                            Tala: {comp.talam}
+                        </span>
+                    )}
+                    {comp.composer && (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20">
+                            <span className="material-symbols-outlined text-[14px]">person</span>
+                            Composer: {comp.composer}
+                        </span>
+                    )}
+                    {videos.length > 0 && (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                            <span className="material-symbols-outlined text-[14px]">smart_display</span>
+                            {videos.length} {videos.length === 1 ? 'Demo' : 'Demos'}
+                        </span>
+                    )}
+                </div>
+            </div>
+
+            {/* Sahityam & Meaning Section */}
+            {(hasLyrics || hasMeaning) && (
+                <div className="mt-6 rounded-2xl bg-slate-50 dark:bg-black/30 border border-black/5 dark:border-white/5 p-5">
+                    {/* Switcher tabs */}
+                    <div className="flex items-center gap-2 mb-4 border-b border-black/5 dark:border-white/5 pb-3">
+                        {hasLyrics && (
+                            <button
+                                type="button"
+                                onClick={() => setActiveTab('lyrics')}
+                                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                                    activeTab === 'lyrics'
+                                        ? 'bg-primary text-white shadow-sm shadow-primary/30'
+                                        : 'bg-white dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10'
+                                }`}
+                            >
+                                <span className="material-symbols-outlined text-[15px]">lyrics</span>
+                                Sahityam (Lyrics)
+                            </button>
+                        )}
+                        {hasMeaning && (
+                            <button
+                                type="button"
+                                onClick={() => setActiveTab('meaning')}
+                                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                                    activeTab === 'meaning'
+                                        ? 'bg-primary text-white shadow-sm shadow-primary/30'
+                                        : 'bg-white dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10'
+                                }`}
+                            >
+                                <span className="material-symbols-outlined text-[15px]">translate</span>
+                                Meaning & Translation
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Tab Content */}
+                    {activeTab === 'lyrics' && hasLyrics && (
+                        <div className="font-serif leading-relaxed text-slate-800 dark:text-slate-200 text-sm md:text-base whitespace-pre-wrap pl-1">
+                            {comp.lyrics}
+                        </div>
+                    )}
+                    {activeTab === 'meaning' && hasMeaning && (
+                        <div className="leading-relaxed text-slate-700 dark:text-slate-300 text-sm whitespace-pre-wrap pl-1">
+                            {renderFormattedMarkdown(comp.meaning || '')}
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* Mapped Videos */}
+            {videos.length > 0 && (
+                <div className="mt-8 pt-6 border-t border-black/5 dark:border-white/10">
+                    <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-2">
+                            <span className="material-symbols-outlined text-red-500 text-xl">smart_display</span>
+                            <h4 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                                Video Demonstrations ({videos.length})
+                            </h4>
+                        </div>
+                        <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                            Concerts, Kutcheris & Tutorials
+                        </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {videos.map((vid, vidIdx) => (
+                            <VideoCard
+                                key={vid.id || vidIdx}
+                                video={vid}
+                                index={vidIdx}
+                                parentTitle={comp.title}
+                            />
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
@@ -153,149 +388,6 @@ export default function RagamDetailPage({ params }: { params: Promise<{ id: stri
         setActiveAudioId(audioId);
     };
 
-    // Extract composition names from famousCompositions markdown text
-    const parsedCompositions: string[] = React.useMemo(() => {
-        if (!ragam?.famousCompositions) return [];
-        return ragam.famousCompositions
-            .split('\n')
-            .map((line) => {
-                const match = line.match(/\*\*(.*?)\*\*/);
-                return match ? match[1].trim() : null;
-            })
-            .filter((item): item is string => Boolean(item));
-    }, [ragam?.famousCompositions]);
-
-    // Parse video metadata (tag, clean title, and matched composition)
-    const parsedVideos = React.useMemo(() => {
-        if (!ragam?.videos) return [];
-
-        return ragam.videos.map((video) => {
-            const rawTitle = video.title || 'Demonstration';
-            
-            // Extract tag in brackets [Tag]
-            const tagMatch = rawTitle.match(/\[(.*?)\]/);
-            const tag = tagMatch ? tagMatch[1].trim() : null;
-            const titleWithoutTag = tagMatch ? rawTitle.replace(/\[(.*?)\]/, '').trim() : rawTitle;
-
-            // Match with known compositions
-            let matchedComposition = 'General Demonstrations';
-            for (const comp of parsedCompositions) {
-                const compNormalized = comp.toLowerCase().replace(/[^a-z0-9]/g, '');
-                const titleNormalized = titleWithoutTag.toLowerCase().replace(/[^a-z0-9]/g, '');
-                if (titleNormalized.includes(compNormalized) || compNormalized.includes(titleNormalized.slice(0, 10))) {
-                    matchedComposition = comp;
-                    break;
-                }
-            }
-
-            return {
-                ...video,
-                tag,
-                displayTitle: titleWithoutTag,
-                matchedComposition,
-            };
-        });
-    }, [ragam?.videos, parsedCompositions]);
-
-    const [selectedComposition, setSelectedComposition] = useState<string>('all');
-
-    // Group videos by composition
-    const compositionGroups = React.useMemo(() => {
-        const groups: { [compName: string]: typeof parsedVideos } = {};
-        
-        parsedCompositions.forEach((comp) => {
-            groups[comp] = [];
-        });
-
-        parsedVideos.forEach((video) => {
-            if (!groups[video.matchedComposition]) {
-                groups[video.matchedComposition] = [];
-            }
-            groups[video.matchedComposition].push(video);
-        });
-
-        return Object.entries(groups).filter(([_, vList]) => vList.length > 0);
-    }, [parsedCompositions, parsedVideos]);
-
-    const filteredVideos = React.useMemo(() => {
-        if (selectedComposition === 'all') return parsedVideos;
-        return parsedVideos.filter((v) => v.matchedComposition === selectedComposition);
-    }, [selectedComposition, parsedVideos]);
-
-    const getTagBadge = (tag: string | null) => {
-        if (!tag) return null;
-        const lower = tag.toLowerCase();
-        if (lower.includes('concert') || lower.includes('kutcheri') || lower.includes('rendition')) {
-            return (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
-                    <span className="material-symbols-outlined text-[12px]">mic</span>
-                    {tag}
-                </span>
-            );
-        }
-        if (lower.includes('lesson') || lower.includes('tutorial') || lower.includes('class')) {
-            return (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                    <span className="material-symbols-outlined text-[12px]">school</span>
-                    {tag}
-                </span>
-            );
-        }
-        if (lower.includes('notation') || lower.includes('practice') || lower.includes('masterclass')) {
-            return (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
-                    <span className="material-symbols-outlined text-[12px]">menu_book</span>
-                    {tag}
-                </span>
-            );
-        }
-        return (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-primary/10 text-primary border border-primary/20">
-                <span className="material-symbols-outlined text-[12px]">play_circle</span>
-                {tag}
-            </span>
-        );
-    };
-
-    const renderVideoCard = (video: typeof parsedVideos[0], index: number) => {
-        const videoId = getYouTubeId(video.youtubevideoUrl);
-        if (!videoId) return null;
-
-        return (
-            <div
-                key={video.id || index}
-                className="overflow-hidden rounded-2xl border border-black/5 dark:border-white/10 bg-slate-50 dark:bg-black/20 p-4 flex flex-col justify-between hover:border-primary/30 transition-all group"
-            >
-                <div className="mb-3">
-                    <div className="flex items-center justify-between gap-2 mb-2">
-                        <div className="flex items-center gap-2 min-w-0">
-                            <div className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-red-500/10 text-red-500 font-bold text-xs">
-                                {index + 1}
-                            </div>
-                            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider truncate">
-                                {video.matchedComposition}
-                            </span>
-                        </div>
-                        {getTagBadge(video.tag)}
-                    </div>
-                    <h4 className="font-bold text-sm text-slate-900 dark:text-white line-clamp-2 leading-snug">
-                        {video.displayTitle || `Demonstration ${index + 1}`}
-                    </h4>
-                </div>
-
-                <div className="aspect-video w-full rounded-xl overflow-hidden bg-slate-950 shadow-inner">
-                    <iframe
-                        src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0`}
-                        title={video.displayTitle || `Video Demonstration ${index + 1}`}
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        className="w-full h-full border-0"
-                    />
-                </div>
-            </div>
-        );
-    };
-
     if (loading) {
         return (
             <div className="min-h-screen flex flex-col">
@@ -316,6 +408,18 @@ export default function RagamDetailPage({ params }: { params: Promise<{ id: stri
     }
 
     const audiosToDisplay = ragam.audios || [];
+    const famousComps = ragam.famous_compositions || [];
+    const hasStructuredCompositions = famousComps.length > 0;
+
+    // Collect IDs of videos already displayed inside structured famous compositions
+    const mappedVideoUrls = new Set(
+        famousComps.flatMap((c) => (c.videos || []).map((v) => v.youtubevideoUrl))
+    );
+
+    // Remaining general videos (if any) that are not linked to a specific composition
+    const generalVideos = (ragam.videos || []).filter(
+        (v) => !mappedVideoUrls.has(v.youtubevideoUrl)
+    );
 
     return (
         <div className="min-h-screen flex flex-col">
@@ -334,11 +438,20 @@ export default function RagamDetailPage({ params }: { params: Promise<{ id: stri
                     {/* Raga Header Banner */}
                     <div className="bg-white dark:bg-background-dark/80 rounded-3xl border border-black/5 dark:border-white/10 p-6 md:p-8 mb-8 shadow-sm relative overflow-hidden">
                         <div className="relative z-10">
-                            <div className="flex flex-wrap items-center gap-2.5 mb-3">
-                                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20">
-                                    {ragam.melakarthaNumber ? `Melakarta #${ragam.melakarthaNumber}` : 'Janya Raga'}
-                                </span>
-                                <span className="text-xs text-slate-400 font-medium">• Carnatic Sangeetam</span>
+                            <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+                                <div className="flex flex-wrap items-center gap-2.5">
+                                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20">
+                                        {ragam.melakarthaNumber ? `Melakarta #${ragam.melakarthaNumber}` : 'Janya Raga'}
+                                    </span>
+                                    <span className="text-xs text-slate-400 font-medium">• Carnatic Sangeetam</span>
+                                </div>
+                                <ShareButton
+                                    title={ragam.raga_name}
+                                    category={ragam.melakarthaNumber ? `Melakarta #${ragam.melakarthaNumber}` : 'Carnatic Raga'}
+                                    text={ragam.description || `Explore ${ragam.raga_name} with arohanam-avarohanam, swarasthanas, famous compositions, and video demonstrations.`}
+                                    variant="pill"
+                                    label="Share Raga"
+                                />
                             </div>
 
                             <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-4">
@@ -384,17 +497,6 @@ export default function RagamDetailPage({ params }: { params: Promise<{ id: stri
                                 <h2>Raga Lakshanam & Characteristics</h2>
                             </div>
                             {renderFormattedMarkdown(ragam.description)}
-                        </div>
-                    )}
-
-                    {/* Famous Compositions Card */}
-                    {ragam.famousCompositions && (
-                        <div className="bg-white dark:bg-background-dark/60 rounded-3xl border border-black/5 dark:border-white/10 p-6 md:p-8 mb-8 shadow-sm">
-                            <div className="flex items-center gap-2.5 text-base font-bold text-slate-900 dark:text-white mb-4">
-                                <span className="material-symbols-outlined text-primary text-xl">library_music</span>
-                                <h2>Famous Compositions in {ragam.raga_name}</h2>
-                            </div>
-                            {renderFormattedMarkdown(ragam.famousCompositions)}
                         </div>
                     )}
 
@@ -452,84 +554,69 @@ export default function RagamDetailPage({ params }: { params: Promise<{ id: stri
                         </div>
                     )}
 
-                    {/* Video Lessons Section */}
-                    {parsedVideos.length > 0 && (
+                    {/* Structured Famous Compositions Section */}
+                    {hasStructuredCompositions ? (
+                        <div className="space-y-8 mb-8">
+                            <div className="flex items-center justify-between pb-3 border-b border-black/5 dark:border-white/10">
+                                <div className="flex items-center gap-2.5">
+                                    <span className="material-symbols-outlined text-primary text-2xl">library_music</span>
+                                    <div>
+                                        <h2 className="text-xl font-black text-slate-900 dark:text-white">
+                                            Famous Compositions in {ragam.raga_name} ({famousComps.length})
+                                        </h2>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                                            Master compositions with Sahityam, Meaning, and Video Demonstrations
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {famousComps.map((comp, idx) => (
+                                <CompositionCard
+                                    key={comp.id || idx}
+                                    comp={comp}
+                                    index={idx}
+                                />
+                            ))}
+                        </div>
+                    ) : ragam.famousCompositions ? (
+                        /* Fallback to legacy markdown text if structured records are not yet present */
                         <div className="bg-white dark:bg-background-dark/60 rounded-3xl border border-black/5 dark:border-white/10 p-6 md:p-8 mb-8 shadow-sm">
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                            <div className="flex items-center gap-2.5 text-base font-bold text-slate-900 dark:text-white mb-4">
+                                <span className="material-symbols-outlined text-primary text-xl">library_music</span>
+                                <h2>Famous Compositions in {ragam.raga_name}</h2>
+                            </div>
+                            {renderFormattedMarkdown(ragam.famousCompositions)}
+                        </div>
+                    ) : null}
+
+                    {/* General / Additional Video Demonstrations (if any unmapped remain) */}
+                    {generalVideos.length > 0 && (
+                        <div className="bg-white dark:bg-background-dark/60 rounded-3xl border border-black/5 dark:border-white/10 p-6 md:p-8 mb-8 shadow-sm">
+                            <div className="flex items-center justify-between mb-6">
                                 <div className="flex items-center gap-2.5">
                                     <span className="material-symbols-outlined text-red-500 text-2xl">smart_display</span>
                                     <div>
                                         <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                                            Video Demonstrations ({parsedVideos.length})
+                                            Additional Video Lessons & Alapanas ({generalVideos.length})
                                         </h2>
                                         <p className="text-xs text-slate-500 dark:text-slate-400">
-                                            Vocal concerts, kutcheri renditions, and step-by-step song lessons
+                                            Raga Lakshana classes, Alapanas, and foundational tutorials
                                         </p>
                                     </div>
                                 </div>
-                                {compositionGroups.length > 1 && (
-                                    <div className="text-xs font-bold text-slate-400">
-                                        {compositionGroups.length} Compositions
-                                    </div>
-                                )}
                             </div>
 
-                            {/* Composition Filter Tabs */}
-                            {compositionGroups.length > 1 && (
-                                <div className="flex flex-wrap items-center gap-2 mb-6 pb-2 border-b border-black/5 dark:border-white/5">
-                                    <button
-                                        type="button"
-                                        onClick={() => setSelectedComposition('all')}
-                                        className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                                            selectedComposition === 'all'
-                                                ? 'bg-primary text-white shadow-sm shadow-primary/30'
-                                                : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
-                                        }`}
-                                    >
-                                        All Compositions ({parsedVideos.length})
-                                    </button>
-                                    {compositionGroups.map(([compName, vList]) => (
-                                        <button
-                                            type="button"
-                                            key={compName}
-                                            onClick={() => setSelectedComposition(compName)}
-                                            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                                                selectedComposition === compName
-                                                    ? 'bg-primary text-white shadow-sm shadow-primary/30'
-                                                    : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10'
-                                            }`}
-                                        >
-                                            {compName} ({vList.length})
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
-
-                            {/* Grouped or Filtered Display */}
-                            {selectedComposition === 'all' ? (
-                                <div className="space-y-8">
-                                    {compositionGroups.map(([compName, vList]) => (
-                                        <div key={compName} className="space-y-4">
-                                            <div className="flex items-center gap-2.5 pt-2">
-                                                <span className="material-symbols-outlined text-primary text-base">music_note</span>
-                                                <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-                                                    {compName}
-                                                </h3>
-                                                <span className="text-xs px-2 py-0.5 rounded-full font-bold bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-400">
-                                                    {vList.length} {vList.length === 1 ? 'Demo' : 'Demos'}
-                                                </span>
-                                            </div>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                                {vList.map((video, idx) => renderVideoCard(video, idx))}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                    {filteredVideos.map((video, idx) => renderVideoCard(video, idx))}
-                                </div>
-                            )}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                {generalVideos.map((video, idx) => (
+                                    <VideoCard
+                                        key={video.id || idx}
+                                        video={video}
+                                        index={idx}
+                                        parentTitle={ragam.raga_name}
+                                    />
+                                ))}
+                            </div>
                         </div>
                     )}
 
@@ -538,42 +625,40 @@ export default function RagamDetailPage({ params }: { params: Promise<{ id: stri
                         {prevRagam ? (
                             <Link
                                 href={`/ragams/${prevRagam.id}`}
-                                className="group w-full sm:w-auto inline-flex items-center gap-3 p-4 rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-background-dark/40 hover:border-primary/40 transition-all text-left"
+                                className="flex items-center gap-3 p-4 rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-background-dark/60 hover:border-primary/40 transition-all w-full sm:w-1/2 group"
                             >
-                                <span className="material-symbols-outlined text-slate-400 group-hover:text-primary group-hover:-translate-x-1 transition-all">
+                                <span className="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">
                                     arrow_back
                                 </span>
-                                <div>
-                                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                                <div className="text-left min-w-0">
+                                    <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
                                         Previous Raga
-                                    </span>
-                                    <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-primary transition-colors">
+                                    </div>
+                                    <div className="text-sm font-bold text-slate-800 dark:text-slate-100 truncate">
                                         {prevRagam.raga_name}
-                                    </span>
+                                    </div>
                                 </div>
                             </Link>
-                        ) : (
-                            <div className="hidden sm:block" />
-                        )}
+                        ) : <div className="w-full sm:w-1/2" />}
 
-                        {nextRagam && (
+                        {nextRagam ? (
                             <Link
                                 href={`/ragams/${nextRagam.id}`}
-                                className="group w-full sm:w-auto inline-flex items-center justify-between sm:justify-start gap-3 p-4 rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-background-dark/40 hover:border-primary/40 transition-all text-right ml-auto"
+                                className="flex items-center justify-end text-right gap-3 p-4 rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-background-dark/60 hover:border-primary/40 transition-all w-full sm:w-1/2 group"
                             >
-                                <div>
-                                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                                <div className="text-right min-w-0">
+                                    <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
                                         Next Raga
-                                    </span>
-                                    <span className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-primary transition-colors">
+                                    </div>
+                                    <div className="text-sm font-bold text-slate-800 dark:text-slate-100 truncate">
                                         {nextRagam.raga_name}
-                                    </span>
+                                    </div>
                                 </div>
-                                <span className="material-symbols-outlined text-slate-400 group-hover:text-primary group-hover:translate-x-1 transition-all">
+                                <span className="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">
                                     arrow_forward
                                 </span>
                             </Link>
-                        )}
+                        ) : <div className="w-full sm:w-1/2" />}
                     </div>
                 </div>
             </div>

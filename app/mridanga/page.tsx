@@ -7,6 +7,7 @@ import axios from 'axios';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { API_BASE_URL } from '@/lib/constants';
+import ShareButton from '@/components/common/ShareButton';
 
 interface MridangaAudio {
     id: number;
@@ -60,6 +61,7 @@ const CATEGORIES = [
     { id: 'matan', label: 'Matan' },
     { id: 'rela', label: 'Rela' },
     { id: 'duggi', label: 'Duggi Style' },
+    { id: 'udaan', label: 'Udaan (Pickup Beats)' },
 ];
 
 function MridangaLessonList() {
@@ -167,11 +169,20 @@ function MridangaLessonList() {
                             Mridanga Lessons Directory
                         </h1>
                         <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                            Browse Sri Khol talas, bols, step-by-step video tutorials, and live kirtan demos
+                            Browse Sri Khol talas, bols, and step-by-step video tutorials
                         </p>
                     </div>
-                    <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-black/5 dark:bg-white/5 px-4 py-2 rounded-xl border border-black/5 dark:border-white/10 shrink-0 self-start md:self-auto">
-                        {filteredLessons.length} {filteredLessons.length === 1 ? 'Lesson' : 'Lessons'}
+                    <div className="flex items-center gap-3 shrink-0 self-start md:self-auto">
+                        <ShareButton
+                            title={selectedCategory === 'all' ? 'Mridanga Lessons Directory' : `Mridanga Lessons - ${CATEGORIES.find(c => c.id === selectedCategory)?.label || selectedCategory}`}
+                            category={selectedCategory === 'all' ? 'Sri Khol' : CATEGORIES.find(c => c.id === selectedCategory)?.label}
+                            text="Explore authentic Gaudiya kirtan mridanga beats and video tutorials."
+                            variant="pill"
+                            label={selectedCategory === 'all' ? 'Share Directory' : 'Share Category'}
+                        />
+                        <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-black/5 dark:bg-white/5 px-4 py-2 rounded-xl border border-black/5 dark:border-white/10">
+                            {filteredLessons.length} {filteredLessons.length === 1 ? 'Lesson' : 'Lessons'}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -270,12 +281,10 @@ function MridangaLessonList() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredLessons.map((lesson) => {
                         const videoCount = lesson.videos?.length || 0;
-                        const demoCount = lesson.kirtan_demos?.length || 0;
                         const audioCount = lesson.audios?.length || 0;
 
                         const rawMantra = lesson.mantras_and_notes ||
                             lesson.videos?.find(v => v.mantras_and_notes)?.mantras_and_notes ||
-                            lesson.kirtan_demos?.find(kd => kd.mantras_and_notes)?.mantras_and_notes ||
                             '';
 
                         const mantraLines = rawMantra
@@ -298,10 +307,19 @@ function MridangaLessonList() {
                                                 </span>
                                             )}
                                         </div>
-                                        <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                                            <span className="material-symbols-outlined text-base">
-                                                arrow_forward
-                                            </span>
+                                        <div className="flex items-center gap-2">
+                                            <ShareButton
+                                                title={lesson.tala_name}
+                                                category={lesson.tala_category}
+                                                url={`/mridanga/${lesson.id}`}
+                                                text={`Learn ${lesson.tala_name} Sri Khol beats and kirtan variations.`}
+                                                variant="icon"
+                                            />
+                                            <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                                                <span className="material-symbols-outlined text-base">
+                                                    arrow_forward
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -321,24 +339,18 @@ function MridangaLessonList() {
                                 </div>
 
                                 <div className="mt-5 pt-4 border-t border-black/5 dark:border-white/5 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-medium">
-                                    <span className="flex items-center gap-1.5">
+                                    <span className="flex items-center gap-1.5 font-semibold text-slate-700 dark:text-slate-300">
                                         <span className="material-symbols-outlined text-sm text-red-500">
                                             play_circle
                                         </span>
                                         {videoCount} {videoCount === 1 ? 'Tutorial' : 'Tutorials'}
                                     </span>
-                                    <span className="flex items-center gap-1.5">
-                                        <span className="material-symbols-outlined text-sm text-amber-500">
-                                            live_tv
-                                        </span>
-                                        {demoCount} {demoCount === 1 ? 'Kirtan Demo' : 'Kirtan Demos'}
-                                    </span>
                                     {audioCount > 0 && (
-                                        <span className="flex items-center gap-1.5">
+                                        <span className="flex items-center gap-1.5 font-semibold text-slate-700 dark:text-slate-300">
                                             <span className="material-symbols-outlined text-sm text-primary">
                                                 audio_file
                                             </span>
-                                            {audioCount}
+                                            {audioCount} {audioCount === 1 ? 'Audio' : 'Audios'}
                                         </span>
                                     )}
                                 </div>

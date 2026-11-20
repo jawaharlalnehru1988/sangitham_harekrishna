@@ -17,7 +17,7 @@ const Footer = () => {
                 </div>
             </div>
             <p className="text-[10px] text-slate-600 dark:text-slate-400 font-medium text-center leading-loose">
-                © 2024 Haribol Carnatic Academy.<br />Spread Devotion through Melodies.
+                © 2024 Haribol Sangeet Academy.<br />Spread Devotion through Melodies.
             </p>
         </footer>
     );

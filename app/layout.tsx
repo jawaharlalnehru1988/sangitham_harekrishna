@@ -8,8 +8,8 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Carnatic Music - Haribol Home",
-  description: "Spread Devotion through Melodies",
+  title: "Haribol Sangeet - Carnatic & Hindustani Music",
+  description: "Spread Devotion through Melodies - Carnatic and Hindustani Classical Devotional Music",
 };
 
 import { ThemeProvider } from "@/components/providers/ThemeProvider";

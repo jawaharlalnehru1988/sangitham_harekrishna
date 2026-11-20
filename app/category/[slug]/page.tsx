@@ -33,6 +33,9 @@ const getIconForCategory = (title: string) => {
     if (lowerTitle.includes('question')) return "quiz";
     if (lowerTitle.includes('theory')) return "menu_book";
     if (lowerTitle.includes('advanced')) return "star";
+    if (lowerTitle.includes('nottu') || lowerTitle.includes('nottuswaram')) return "music_note";
+    if (lowerTitle.includes('swarajati') || lowerTitle.includes('swarajathi') || lowerTitle.includes('jatiswaram') || lowerTitle.includes('jathiswaram')) return "queue_music";
+    if (lowerTitle.includes('varnam')) return "stars";
     return "library_music";
 };
 
@@ -60,17 +63,15 @@ export default function CategoryPage({ params }: { params: Promise<{ slug: strin
                 });
 
                 if (matchedCategory) {
-                    setCategoryName(matchedCategory.name);
-                    setColorCode(matchedCategory.colorCode || '#6366f1');
+                    window.location.replace(`/practice?category=${encodeURIComponent(matchedCategory.name)}`);
+                    return;
                 } else {
-                    setCategoryName(currentSlug);
+                    window.location.replace('/practice');
+                    return;
                 }
-
-                // 2. Fetch lessons for this category
-                const res = await axios.get(`${API_BASE_URL}/carnatic-syllabus/?category=${matchedCategory ? matchedCategory.id : currentSlug}&page_size=100`);
-                setLessons(res.data.results || (Array.isArray(res.data) ? res.data : []));
             } catch (error) {
                 console.error('Error fetching data:', error);
+                window.location.replace('/practice');
             } finally {
                 setLoading(false);
             }

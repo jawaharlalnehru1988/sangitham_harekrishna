@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
 import { API_BASE_URL } from '@/lib/constants';
+import ShareButton from '@/components/common/ShareButton';
 
 interface PracticeAudio {
     id: number;
@@ -77,6 +78,42 @@ const getCategoryMeta = (catName: string): { icon: string; description: string }
         return {
             icon: 'timer',
             description: 'Mastering the 7 primary rhythmic tala cycles with swara progressions',
+        };
+    }
+    if (lower.includes('geetham') || lower.includes('githam')) {
+        return {
+            icon: 'library_music',
+            description: 'Simple melodic compositions combining swara and sahitya in praise of the Divine',
+        };
+    }
+    if (lower.includes('swarajati') || lower.includes('swarajathi')) {
+        return {
+            icon: 'queue_music',
+            description: 'Melodic compositions combining swaram and sahityam that bridge the gap between geethams and varnams',
+        };
+    }
+    if (lower.includes('jatiswaram') || lower.includes('jathiswaram')) {
+        return {
+            icon: 'music_note',
+            description: 'Melodic swara compositions set to intricate rhythmic jatis without sahityam, developing swarasthana precision and laya control before varnams',
+        };
+    }
+    if (lower.includes('varnam')) {
+        return {
+            icon: 'stars',
+            description: 'Master pedagogical compositions encompassing raga swarupa, intricate gamakas, and speed transitions in Adi and Ata talams',
+        };
+    }
+    if (lower.includes('kriti') || lower.includes('krithi')) {
+        return {
+            icon: 'library_music',
+            description: 'Major devotional compositions embodying raga bhava, sahitya aesthetics, sangathis, and chittaswarams composed by the Carnatic Trinity',
+        };
+    }
+    if (lower.includes('kirtan') || lower.includes('keerthan')) {
+        return {
+            icon: 'temple_hindu',
+            description: 'Soul-stirring devotional compositions steeped in divine bhakti, nama mahima, and bhava composed by revered saint-singers',
         };
     }
     return {
@@ -183,9 +220,18 @@ const PracticeSection = () => {
                                             {category.icon}
                                         </span>
                                     </div>
-                                    <span className="px-3 py-1 rounded-full text-xs font-extrabold tracking-wide bg-primary/10 text-primary border border-primary/20 group-hover:bg-primary group-hover:text-white transition-colors">
-                                        {category.practiceCount} {category.practiceCount === 1 ? 'Practice' : 'Practices'}
-                                    </span>
+                                    <div className="flex items-center gap-2">
+                                        <ShareButton
+                                            title={`${category.name} - Carnatic Music Syllabus`}
+                                            category={category.name}
+                                            url={`/practice?category=${encodeURIComponent(category.name)}`}
+                                            text={category.description}
+                                            variant="icon"
+                                        />
+                                        <span className="px-3 py-1 rounded-full text-xs font-extrabold tracking-wide bg-primary/10 text-primary border border-primary/20 group-hover:bg-primary group-hover:text-white transition-colors">
+                                            {category.practiceCount} {category.practiceCount === 1 ? 'Practice' : 'Practices'}
+                                        </span>
+                                    </div>
                                 </div>
 
                                 {/* Category Title */}
